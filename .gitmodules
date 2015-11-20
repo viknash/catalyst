@@ -4,3 +4,33 @@
 [submodule "extern/libcds"]
 	path = extern/libcds
 	url = https://github.com/viknash/libcds.git
+[submodule "extern/cpp11-on-multicore"]
+	path = extern/cpp11-on-multicore
+	url = https://github.com/viknash/cpp11-on-multicore.git
+[submodule "extern/green_threads"]
+	path = extern/green_threads
+	url = https://github.com/viknash/green_threads.git
+[submodule "extern/nanomq"]
+	path = extern/nanomq
+	url = https://github.com/viknash/nanomq.git
+[submodule "extern/nanomsg"]
+	path = extern/nanomsg
+	url = https://github.com/viknash/nanomsg.git
+[submodule "extern/premake-core"]
+	path = extern/premake-core
+	url = https://github.com/viknash/premake-core.git
+[submodule "extern/protobuf"]
+	path = extern/protobuf
+	url = https://github.com/viknash/protobuf.git
+[submodule "extern/spartan"]
+	path = extern/spartan
+	url = https://github.com/viknash/spartan.git
+[submodule "extern/sttcl"]
+	path = extern/sttcl
+	url = https://github.com/viknash/sttcl.git
+[submodule "extern/theron"]
+	path = extern/theron
+	url = https://github.com/viknash/theron.git
+[submodule "extern/ThreadPool"]
+	path = extern/ThreadPool
+	url = https://github.com/viknash/ThreadPool.git
