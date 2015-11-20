@@ -1,3 +1,6 @@
 [submodule "extern/fastbuild"]
 	path = extern/fastbuild
 	url = https://github.com/viknash/fastbuild.git
+[submodule "extern/libcds"]
+	path = extern/libcds
+	url = https://github.com/viknash/libcds.git
