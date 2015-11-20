@@ -7,6 +7,9 @@ REM nircmd
 choco install nircmd -y --force -ia '%CD%\..\tools\nircmd'
 mkdir %TOOLSDIR%\nircmd
 copy /Y %TOOLSDIR%\chocolatey\lib\nircmd\tools\nircmd* %TOOLSDIR%\nircmd
+For /R %TOOLSDIR%\nircmd %%G IN (*.exe) do (
+	%TOOLSDIR%\nircmd\nircmdc shortcut "%%G" "%TOOLSDIR%\bin" "%%~nG"
+)
 
 REM cmake
 choco install cmake -y --force -ia '/D=%TOOLSDIR%\cmake'
