@@ -18,6 +18,19 @@ set INCLUDE=%CD%\extern\range\include;%INCLUDE%
 set INCLUDE=%CD%\extern\random\include;%INCLUDE%
 set INCLUDE=%CD%\extern\iterator\include;%INCLUDE%
 set INCLUDE=%CD%\extern\integer\include;%INCLUDE%
+set INCLUDE=%CD%\extern\type_traits\include;%INCLUDE%
+set INCLUDE=%CD%\extern\mpl\include;%INCLUDE%
+set INCLUDE=%CD%\extern\detail\include;%INCLUDE%
+set INCLUDE=%CD%\extern\preprocessor\include;%INCLUDE%
+set INCLUDE=%CD%\extern\concept_check\include;%INCLUDE%
+set INCLUDE=%CD%\extern\utility\include;%INCLUDE%
+set INCLUDE=%CD%\extern\throw_exception\include;%INCLUDE%
+set INCLUDE=%CD%\extern\numeric_conversion\include;%INCLUDE%
+set INCLUDE=%CD%\extern\array\include;%INCLUDE%
+set INCLUDE=%CD%\extern\math\include;%INCLUDE%
+set INCLUDE=%CD%\extern\predef\include;%INCLUDE%
+set INCLUDE=%CD%\extern\smart_ptr\include;%INCLUDE%
+set INCLUDE=%CD%\extern\system\include;%INCLUDE%
 doskey devenv=devenv.exe /useenv $*
 %comspec% /k ""%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat"" x86
 popd

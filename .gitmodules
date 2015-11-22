@@ -79,3 +79,42 @@
 [submodule "extern/iterator"]
 	path = extern/iterator
 	url = https://github.com/viknash/iterator.git
+[submodule "extern/integer"]
+	path = extern/integer
+	url = https://github.com/viknash/integer.git
+[submodule "extern/type_traits"]
+	path = extern/type_traits
+	url = https://github.com/viknash/type_traits.git
+[submodule "extern/mpl"]
+	path = extern/mpl
+	url = https://github.com/viknash/mpl.git
+[submodule "extern/preprocessor"]
+	path = extern/preprocessor
+	url = https://github.com/viknash/preprocessor.git
+[submodule "extern/detail"]
+	path = extern/detail
+	url = https://github.com/viknash/detail.git
+[submodule "extern/concept_check"]
+	path = extern/concept_check
+	url = https://github.com/viknash/concept_check.git
+[submodule "extern/utility"]
+	path = extern/utility
+	url = https://github.com/viknash/utility.git
+[submodule "extern/throw_exception"]
+	path = extern/throw_exception
+	url = https://github.com/viknash/throw_exception.git
+[submodule "extern/numeric_conversion"]
+	path = extern/numeric_conversion
+	url = https://github.com/viknash/numeric_conversion.git
+[submodule "extern/array"]
+	path = extern/array
+	url = https://github.com/viknash/array.git
+[submodule "extern/math"]
+	path = extern/math
+	url = https://github.com/viknash/math.git
+[submodule "extern/predef"]
+	path = extern/predef
+	url = https://github.com/viknash/predef.git
+[submodule "extern/smart_ptr"]
+	path = extern/smart_ptr
+	url = https://github.com/viknash/smart_ptr.git
