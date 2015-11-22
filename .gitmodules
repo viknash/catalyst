@@ -121,3 +121,45 @@
 [submodule "extern/system"]
 	path = extern/system
 	url = https://github.com/viknash/system.git
+[submodule "extern/chrono"]
+	path = extern/chrono
+	url = https://github.com/viknash/chrono.git
+[submodule "extern/ratio"]
+	path = extern/ratio
+	url = https://github.com/viknash/ratio.git
+[submodule "extern/atomic"]
+	path = extern/atomic
+	url = https://github.com/viknash/atomic.git
+[submodule "extern/bind"]
+	path = extern/bind
+	url = https://github.com/viknash/bind.git
+[submodule "extern/io"]
+	path = extern/io
+	url = https://github.com/viknash/io.git
+[submodule "extern/tuple"]
+	path = extern/tuple
+	url = https://github.com/viknash/tuple.git
+[submodule "extern/exception"]
+	path = extern/exception
+	url = https://github.com/viknash/exception.git
+[submodule "extern/optional"]
+	path = extern/optional
+	url = https://github.com/viknash/optional.git
+[submodule "extern/function"]
+	path = extern/function
+	url = https://github.com/viknash/function.git
+[submodule "extern/type_index"]
+	path = extern/type_index
+	url = https://github.com/viknash/type_index.git
+[submodule "extern/align"]
+	path = extern/align
+	url = https://github.com/boostorg/align.git
+[submodule "extern/algorithm"]
+	path = extern/algorithm
+	url = https://github.com/viknash/algorithm.git
+[submodule "extern/tokenizer"]
+	path = extern/tokenizer
+	url = https://github.com/viknash/tokenizer.git
+[submodule "extern/unordered"]
+	path = extern/unordered
+	url = https://github.com/viknash/unordered.git
