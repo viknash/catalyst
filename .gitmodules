@@ -118,3 +118,6 @@
 [submodule "extern/smart_ptr"]
 	path = extern/smart_ptr
 	url = https://github.com/viknash/smart_ptr.git
+[submodule "extern/system"]
+	path = extern/system
+	url = https://github.com/viknash/system.git
