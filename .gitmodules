@@ -34,3 +34,48 @@
 [submodule "extern/ThreadPool"]
 	path = extern/ThreadPool
 	url = https://github.com/viknash/ThreadPool.git
+[submodule "extern/intrusive"]
+	path = extern/intrusive
+	url = https://github.com/viknash/intrusive.git
+[submodule "extern/config"]
+	path = extern/config
+	url = https://github.com/viknash/config.git
+[submodule "extern/assert"]
+	path = extern/assert
+	url = https://github.com/viknash/assert.git
+[submodule "extern/core"]
+	path = extern/core
+	url = https://github.com/viknash/core.git
+[submodule "extern/container"]
+	path = extern/container
+	url = https://github.com/viknash/container.git
+[submodule "extern/move"]
+	path = extern/move
+	url = https://github.com/viknash/move.git
+[submodule "extern/static_assert"]
+	path = extern/static_assert
+	url = https://github.com/viknash/static_assert.git
+[submodule "extern/thread"]
+	path = extern/thread
+	url = https://github.com/viknash/thread.git
+[submodule "extern/date_time"]
+	path = extern/date_time
+	url = https://github.com/boostorg/date_time.git
+[submodule "extern/lexical_cast"]
+	path = extern/lexical_cast
+	url = https://github.com/viknash/lexical_cast.git
+[submodule "extern/vld"]
+	path = extern/vld
+	url = https://github.com/viknash/vld.git
+[submodule "extern/functional"]
+	path = extern/functional
+	url = https://github.com/viknash/functional.git
+[submodule "extern/range"]
+	path = extern/range
+	url = https://github.com/viknash/range.git
+[submodule "extern/random"]
+	path = extern/random
+	url = https://github.com/viknash/random.git
+[submodule "extern/iterator"]
+	path = extern/iterator
+	url = https://github.com/viknash/iterator.git
