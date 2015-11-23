@@ -46,5 +46,11 @@ set INCLUDE=%CD%\extern\algorithm\include;%INCLUDE%
 set INCLUDE=%CD%\extern\tokenizer\include;%INCLUDE%
 set INCLUDE=%CD%\extern\unordered\include;%INCLUDE%
 doskey devenv=devenv.exe /useenv $*
-%comspec% /k ""%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat"" x86
+IF "%VS140COMNTOOLS%"=="" (
+	ECHO Visual Studio 2012
+	%comspec% /k "%VS110COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+) ELSE (
+	ECHO Visual Studio 2015
+	%comspec% /k "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+)
 popd
