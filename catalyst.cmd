@@ -1,6 +1,7 @@
 @echo off
 pushd %~dp0
 title Catalyst
+set CATALYST_ROOT=%CD%
 set PATH=%CD%\bin;%CD%\tools\bin;%PATH%
 set PATH=%CD%\tools\bin;%PATH%
 set INCLUDE=%CD%\extern\intrusive\include;%INCLUDE%
