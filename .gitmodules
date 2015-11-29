@@ -169,3 +169,6 @@
 [submodule "extern/build"]
 	path = extern/build
 	url = https://github.com/viknash/build.git
+[submodule "extern/boost"]
+	path = extern/boost
+	url = https://github.com/viknash/boost.git
