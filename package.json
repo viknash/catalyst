@@ -1,0 +1,23 @@
+{
+  "name": "catalyst",
+  "version": "0.0.1",
+  "description": "Catalyst",
+  "main": "docs/index.html",
+  "directories": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viknash/catalyst.git"
+  },
+  "keywords": [
+        "catalyst"
+    ],
+  "author": "Viknash",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "devDependencies": {},
+  "dependencies": {
+    "node-menu": "^0.0.9"
+  },
+  "scripts": {
+  }
+}
