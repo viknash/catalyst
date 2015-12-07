@@ -34,4 +34,9 @@ For /R %TOOLSDIR%\fastbuild %%G IN (*.exe) do (
 	%TOOLSDIR%\nircmd\nircmdc shortcut "%%G" "%TOOLSDIR%\bin" "%%~nG"
 )
 
+REM nvm
+nvm install 5.1.0
+nvm use 5.1.0
+npm update
+
 popd

@@ -33,5 +33,9 @@ For /R %TOOLSDIR%\nircmd %%G IN (*.exe) do (
 del /s /q %TOOLSDIR%\nircmd
 choco uninstall nircmd -y --force -ia '%CD%\..\tools\nircmd'
 
+REM nvm
+nvm uninstall 5.1.0
+
+
 
 popd
