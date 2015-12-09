@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 var fs = require('fs');
-var config = require('../package.json');
+var config = require('../../package.json');
 var plugins = require('gulp-load-plugins')();
 var argv = require('yargs').argv;
 

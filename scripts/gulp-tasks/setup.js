@@ -3,7 +3,7 @@ var git = require('gulp-git');
 var fs = require('fs');
 var child_process = require('child_process');
 var moduleDirectory = "./modules";
-var config = require('../package.json');
+var config = require('../../package.json');
 var argv = require('yargs').argv;
 var gitRepositories = [];
 

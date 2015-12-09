@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var rootDir = process.cwd();
-var config = require('../package.json');
+var config = require('../../package.json');
 var zipFileName = "brackets_extensions.zip";
 var del = require('del');
 /**

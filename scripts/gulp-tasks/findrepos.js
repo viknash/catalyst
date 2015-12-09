@@ -1,6 +1,6 @@
 var fs = require('fs');
 var moduleDirectory = "./modules";
-var config = require('../package.json');
+var config = require('../../package.json');
 
 module.exports = function () {
     var repos = [];

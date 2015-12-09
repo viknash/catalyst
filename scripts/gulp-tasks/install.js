@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-var config = require('../package.json');
+var config = require('../../package.json');
 var plugins = require('gulp-load-plugins')();
 
 var gitRepositories = require("./findrepos.js")();
