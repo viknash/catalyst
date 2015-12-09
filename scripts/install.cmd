@@ -1,8 +1,13 @@
 @echo off
 pushd %~dp0
 set TOOLSDIR=%CD%\..\tools
+IF "%ChocolateyInstall%"=="%TOOLSDIR%\chocolatey" goto install
 setx ChocolateyInstall %TOOLSDIR%\chocolatey
+echo Restart Catalyst
+pause
+exit
 
+:install
 REM nircmd
 choco install nircmd -y --force -ia '%CD%\..\tools\nircmd'
 mkdir %TOOLSDIR%\nircmd
@@ -37,6 +42,12 @@ For /R %TOOLSDIR%\fastbuild %%G IN (*.exe) do (
 REM nvm
 nvm install 5.1.0
 nvm use 5.1.0
-npm update
 
+npm update
+pushd ..
+npm install
+npm install -g gulp
+popd
+
+:exit
 popd

@@ -42,5 +42,4 @@ IF "%VS140COMNTOOLS%"=="" (
 	ECHO Visual Studio 2015
 	%comspec% /k "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
 )
-help
 popd
