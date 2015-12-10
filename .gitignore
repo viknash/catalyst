@@ -1,0 +1,10 @@
+node_modules
+/tools/chocolatey
+/tools/nircmd
+/tools/cmake
+/tools/gow
+/tools/mc
+/tools/bin/*.lnk
+/tmp
+/tools/nvm/v5.1.0
+/tools/nvm/settings.txt
