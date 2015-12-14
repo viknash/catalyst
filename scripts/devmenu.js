@@ -35,5 +35,14 @@ menu.addDelimiter('-', 80, 'Catalyst Help')
             });
         })
     .addDelimiter('*', 80)
+    .addItem(
+        'Launch Catalyst Solution',
+        function () {
+            var grep = spawn('devenv', ['..\\tmp\\VisualStudio\\Catalyst.sln']);
+            grep.on('close', function (code, signal) {
+                console.log('Visual Studio terminated with' + signal);
+            });
+        })
+    .addDelimiter('*', 80)
     .disableDefaultHeader() 
     .start();
