@@ -9,3 +9,4 @@ node_modules
 /tools/nvm/v5.1.0
 /tools/nvm/settings.txt
 /tools/clang
+/src/*.fdb
