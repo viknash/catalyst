@@ -175,3 +175,6 @@
 [submodule "extern/ig-memtrace"]
 	path = extern/ig-memtrace
 	url = https://github.com/viknash/ig-memtrace.git
+[submodule "extern/ig-debugheap"]
+	path = extern/ig-debugheap
+	url = https://github.com/viknash/ig-debugheap.git

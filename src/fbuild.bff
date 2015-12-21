@@ -91,7 +91,6 @@ Compiler( 'Compiler-x64-OSX' )
 [
 	.AdditionalWarnings		= ' /we4062' // enumerator 'identifier' in a switch of enum 'enumeration' is not handled
 							+ ' /we4263' // 'function' : member function does not override any base class virtual member function
-							+ ' /we4265' // 'class': class has virtual functions, but destructor is not virtual
 							+ ' /we4296' // 'operator': expression is always false
 							+ ' /we4555' // expression has no effect; expected expression with side-effect
 							+ ' /we4619' // #pragma warning : there is no warning number 'number'
@@ -113,9 +112,12 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' /D"WIN32_LEAN_AND_MEAN" /D_WIN32 /D__WINDOWS__'
 							+ ' /D"_CRT_SECURE_NO_WARNINGS"' // don't warn about unsafe functions
                             + ' /D"_WINSOCK_DEPRECATED_NO_WARNINGS"' // don't warn about deprecated winsock functions - TODO:C Update API use
+	.UseExceptions			= ' /EHsc'
 	.PCHOptions				= .CompilerOptions
 							+ ' /Fp"%2" /Fo"%3"'
+	.PCHOptions				+ .UseExceptions
 	.CompilerOptions		+ ' /Fo"%2"'
+	.CompilerOptions		+ .UseExceptions
 	.LibrarianOptions		= '/NODEFAULTLIB /WX /NOLOGO /OUT:"%2" "%1"'
 	.LinkerOptions			= '/NODEFAULTLIB /WX /NOLOGO /INCREMENTAL:NO /OUT:"%2" "%1" /DEBUG'
 
@@ -132,12 +134,14 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' /I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$um"'
 							+ ' /I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$shared"'
 							+ ' /I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$ucrt"'
+							+ ' /I"$CATALYST_ROOT$/extern"'
+							+ ' /I"$CATALYST_ROOT$/extern/executors/include"'
+
 	.CompilerOptions		+ .BaseIncludePaths
 	.PCHOptions				+ .BaseIncludePaths
 
 	.WindowsLibPaths		= '$WindowsSDKBasePath$/lib/$WindowsSDKLibVersion$'
 
-	.UseExceptions			= ' /EHsc'
 ]
 
 // X86
@@ -255,7 +259,7 @@ Compiler( 'Compiler-x64-OSX' )
 
 // X86 Clang
 //------------------------------------------------------------------------------
-.X86ClangConfig = 
+.X86ClangBaseConfig = 
 [
 	.ToolsBasePath			= '$ClangBasePath$'
 	.Compiler				= 'Compiler-x86Clang'
@@ -264,7 +268,7 @@ Compiler( 'Compiler-x64-OSX' )
 
 	.WindowsLibPaths		= '$WindowsSDKBasePath$/lib/$WindowsSDKLibVersion$'
 
-	.BaseCompilerOptions	= '-o"%2" "%1" -c -g'
+	.BaseCompilerOptions	= '-o"%2" "%1" -c'
                             + ' -Wall -Werror -Wfatal-errors'   // warnings as errors
 
                             // includes
@@ -273,6 +277,10 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' -I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$um"'
 							+ ' -I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$shared"'
 							+ ' -I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$ucrt"'
+							+ ' -I"$CATALYST_ROOT$/extern"'
+							+ ' -I"$CATALYST_ROOT$/extern/executors/include"'
+
+							+  ' -isystem'
 
                             // defines
 							+ ' -D"WIN32_LEAN_AND_MEAN" -D_WIN32 -D__WINDOWS__'
@@ -288,7 +296,7 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' -D"_INTEGRAL_MAX_BITS=64"'
 
 							// MS compatibility
-							+ ' -fms-compatibility'
+							//+ ' -fms-compatibility'
 							+ ' -fms-extensions'
 							+ ' -fmsc-version=1700'
 
@@ -302,16 +310,19 @@ Compiler( 'Compiler-x64-OSX' )
                             + ' -Wno-incompatible-ms-struct'    // ms_struct may not produce MSVC-compatible layouts for classes with base classes or virtual functions [-Wincompatible-ms-struct]
 							+ ' -Wno-invalid-token-paste'
 							+ ' -Wno-deprecated-declarations'
+							+ ' -Wno-user-defined-literals'
+							+ ' -Wno-parentheses-equality'
+							+ ' -Wno-unused-private-field'
 
 							// Extra warnings
 							+ ' -Wshadow'
 
-							+ ' -fno-exceptions'
-							+ ' -fno-rtti'
+							//+ ' -fno-exceptions'
+							//+ ' -fno-rtti'
 
     .CompilerOptionsC       = '-x c '
                             + .BaseCompilerOptions
-    .CompilerOptions        = '-std=c++11 '                     // allow C++11 features
+    .CompilerOptions        = '-std=c++14 '                     // allow C++11 features
                             + .BaseCompilerOptions
 
 	.PCHOptions				= .CompilerOptions // TODO: Configure this properly
@@ -325,6 +336,22 @@ Compiler( 'Compiler-x64-OSX' )
 	.Config					= 'Debug'
 
 	.UseExceptions			= ' -fexceptions'
+]
+.X86ClangReleaseConfig = 
+[
+	Using( .X86ClangBaseConfig )
+	.BaseCompilerOptions	// release
+							+ ' -DRELEASE'
+
+	.Config					= 'Release'
+]
+.X86ClangDebugConfig = 
+[
+	Using( .X86ClangBaseConfig )
+
+	.BaseCompilerOptions	+ ' -g'
+
+	.Config					= 'Debug'
 ]
 
 // Linux
@@ -499,10 +526,11 @@ Compiler( 'Compiler-x64-OSX' )
 .ProjectX64Profile		= [ Using( .ProjectCommon )	.Config = 'x64-Profile' .PreprocessorDefinitions = .X64Defines + .ProfileDefines ]
 .ProjectX64Release		= [ Using( .ProjectCommon )	.Config = 'x64-Release' .PreprocessorDefinitions = .X64Defines + .ReleaseDefines ]
 .ProjectX86ClangDebug	= [ Using( .ProjectCommon )	.Config = 'x86Clang-Debug' ]
+.ProjectX86ClangRelease	= [ Using( .ProjectCommon )	.Config = 'x86Clang-Release' ]
 
 .ProjectConfigs = { .ProjectX86Debug, .ProjectX86Profile, .ProjectX86Release,
 					.ProjectX64Debug, .ProjectX64Profile, .ProjectX64Release,
-					.ProjectX86ClangDebug }
+					.ProjectX86ClangDebug, .ProjectX86ClangRelease }
 
 // Project to compile everything
 VCXProject( 'All-proj' )
@@ -532,23 +560,24 @@ VCXProject( 'UpdateSolution-proj' )
     .ProjectX64Profile		= [ Using( .ProjectX64Profile )	    Using( .GenerateProjectsCommands ) ]
     .ProjectX64Release		= [ Using( .ProjectX64Release )	    Using( .GenerateProjectsCommands ) ]
     .ProjectX86ClangDebug	= [ Using( .ProjectX86ClangDebug )  Using( .GenerateProjectsCommands ) ]
+    .ProjectX86ClangRelease	= [ Using( .ProjectX86ClangRelease )  Using( .GenerateProjectsCommands ) ]
 
     .ProjectConfigs = { .ProjectX86Debug, .ProjectX86Profile, .ProjectX86Release,
 					    .ProjectX64Debug, .ProjectX64Profile, .ProjectX64Release,
-					    .ProjectX86ClangDebug }
+					    .ProjectX86ClangDebug, .ProjectX86ClangRelease }
 }
 
 // Configurations
 //------------------------------------------------------------------------------
 .Configs = { .X86DebugConfig, .X86ProfileConfig, .X86ReleaseConfig,
 			 .X64DebugConfig, .X64ProfileConfig, .X64ReleaseConfig,
-			 .X86ClangConfig,
+			 .X86ClangReleaseConfig, .X86ClangDebugConfig,
 			 .X64DebugConfig_Linux, .X64ProfileConfig_Linux, .X64ReleaseConfig_Linux,
              .X64DebugConfig_OSX, .X64ProfileConfig_OSX, .X64ReleaseConfig_OSX }
 
 .Configs_Windows_MSVC	= { .X86DebugConfig, .X86ProfileConfig, .X86ReleaseConfig,
 							.X64DebugConfig, .X64ProfileConfig, .X64ReleaseConfig }
-.Configs_Windows_Clang	= { .X86ClangConfig }
+.Configs_Windows_Clang	= { .X86ClangReleaseConfig, .X86ClangDebugConfig }
 .Configs_Linux_GCC      = { .X64DebugConfig_Linux, .X64ProfileConfig_Linux, .X64ReleaseConfig_Linux }
 .Configs_OSX_Clang      = { .X64DebugConfig_OSX, .X64ProfileConfig_OSX, .X64ReleaseConfig_OSX }
 
@@ -584,7 +613,9 @@ ForEach( .Platform in .Platforms )
 }
 Alias( 'All-x86Clang' )
 {
-	.Targets			= { 'All-x86Clang-Debug' }
+	.Targets			= { 'All-x86Clang-Debug',
+							'All-x86Clang-Release',
+						  }
 }
 
 // Aliases : All
