@@ -583,6 +583,7 @@ VCXProject( 'UpdateSolution-proj' )
 
 // Core
 #include "core\fbuild.bff"
+#include "tests\threadpool\fbuild.bff"
 
 // Aliases : All-$Platform$-$Config$
 //------------------------------------------------------------------------------
@@ -648,7 +649,7 @@ Alias( 'All-x86Clang' )
     Alias( 'Tests' )
     {
         .Targets		= { 
-							'Core-x86-Debug',
+							'TestThreadPool-x86-Debug'
                           }
     }
 #endif
@@ -689,7 +690,9 @@ VSSolution( 'solution' )
 
     // Work around for Visual Studio F5 behaviour up-to-date check
 	.Deps				= [
-							.Projects = { 'Core-proj' }
+							.Projects = { 'Core-proj',
+										  'TestThreadPool-proj',
+							 }
 							.Dependencies = { 'All-proj' }
 						  ]
 	.SolutionDependencies = { .Deps }
@@ -697,9 +700,18 @@ VSSolution( 'solution' )
     .Folder_1_Engine =
 	[ 
 		.Path			= 'Engine'
-        .Projects		= { 'Core-proj' }
+        .Projects		=   { 'Core-proj' }
     ]
-    .SolutionFolders	= { .Folder_1_Engine }
+
+	.Folder_2_Tests =
+	[ 
+		.Path			= 'Tests'
+        .Projects		=   { 'TestThreadPool-proj' }
+    ]
+
+    .SolutionFolders	=	{ .Folder_1_Engine,
+							  .Folder_2_Tests,
+							}
 }
 
 //------------------------------------------------------------------------------
