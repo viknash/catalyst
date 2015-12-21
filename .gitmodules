@@ -172,3 +172,6 @@
 [submodule "extern/boost"]
 	path = extern/boost
 	url = https://github.com/viknash/boost.git
+[submodule "extern/ig-memtrace"]
+	path = extern/ig-memtrace
+	url = https://github.com/viknash/ig-memtrace.git
