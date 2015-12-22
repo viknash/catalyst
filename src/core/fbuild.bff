@@ -12,9 +12,8 @@
 		.ProjectOutput				= '../tmp/VisualStudio/Projects/$ProjectName$.vcxproj'
 		.ProjectInputPaths			= '$ProjectPath$\'
 		.ProjectBasePath			= '$ProjectPath$\'
-
 		// Exclude Tests
-//		.ProjectInputPathsExclude	= '$ProjectPath$\CoreTest\'
+		.ProjectInputPathsExclude	= '$ProjectPath$\dfd\'
 	}
 
 	// Unity
@@ -23,7 +22,6 @@
 		// Common options
 		.UnityInputPath				= '$ProjectPath$\'
 		.UnityOutputPath			= '$OutputBase$\Unity\$ProjectPath$\'
-//		.UnityInputExcludePath		= '$ProjectPath$\CoreTest\' // Exclude Tests
 
 		// Windows
 		Unity( '$ProjectName$-Unity-Windows' )
@@ -57,8 +55,10 @@
 			// Precompiled Header Creation/Use
 			.PCHInputFile				= '$ProjectPath$\$PCHName$.cpp'
 			.PCHOutputFile				= '$OutputBase$\$ProjectName$\$PCHName$.pch'
-			.PCHOptions					+ ' /Yc"$ProjectPath$\$PCHName$.h"'
-			.CompilerOptions			+ ' /Yu"$ProjectPath$\$PCHName$.h" /Fp"$PCHOutputFile$"'
+			.PCHOptions					+ ' /Yc"$PCHName$.h"'
+			.PCHOptions					+ ' /I"$ProjectPath$"'
+			.CompilerOptions			+ ' /Yu"$PCHName$.h" /Fp"$PCHOutputFile$"'
+			.CompilerOptions			+ ' /I"$ProjectPath$"'
 
 			// Input (Unity)
 			.CompilerInputUnity			= '$ProjectName$-Unity-Windows'
@@ -80,6 +80,7 @@
 		// Static Library
 		Library( '$ProjectName$-Lib-$Platform$-$Config$' )
 		{
+			.CompilerOptions			+ ' -I"$ProjectPath$"'
 			// Input (Unity)
 			.CompilerInputUnity			= '$ProjectName$-Unity-Windows'
 

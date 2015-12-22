@@ -12,7 +12,7 @@
 		.ProjectInputPaths			= '$ProjectPath$\'
 		.ProjectBasePath			= '$ProjectPath$\'
 
-		.LocalDebuggerCommand		= '^$(SolutionDir)..\^$(Configuration)\tests\threadpool\FBuild.exe'
+		.LocalDebuggerCommand		= '^$(SolutionDir)..\^$(Configuration)\$ProjectPath$\$ProjectName$.exe'
 		.LocalDebuggerWorkingDirectory = '^$(SolutionDir)..\..\src'
 	}
 
@@ -62,7 +62,7 @@
 		{
 			.Libraries					= 	{ 'Core-Lib-$Platform$-$Config$'
 											}
-			.LinkerOutput				= '$OutputBase$\tests\threadpool\FBuild.exe'
+			.LinkerOutput				= '$OutputBase$\$ProjectPath$\$ProjectName$.exe'
 			.LinkerOptions				+ ' /SUBSYSTEM:CONSOLE'
 										+ ' kernel32.lib'
 										+ ' Ws2_32.lib'

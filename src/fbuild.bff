@@ -279,6 +279,7 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' -I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$ucrt"'
 							+ ' -I"$CATALYST_ROOT$/extern"'
 							+ ' -I"$CATALYST_ROOT$/extern/executors/include"'
+							+ ' -I"$CATALYST_ROOT$/src/core/sdk"'
 
 							+  ' -isystem'
 
