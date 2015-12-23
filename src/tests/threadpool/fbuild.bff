@@ -1,4 +1,4 @@
-// FBuildApp
+// TestThreadPool
 //------------------------------------------------------------------------------
 {
 	.ProjectName		= 'TestThreadPool'
@@ -53,8 +53,8 @@
 			.CompilerInputUnity			= '$ProjectName$-Unity-Windows'
 
 			// Output
-			.CompilerOutputPath			= '$OutputBase$\$ProjectName$\'
- 			.LibrarianOutput 			= '$OutputBase$\$ProjectName$\$ProjectName$.lib'
+			.CompilerOutputPath			= '^$(SolutionDir)..\^$(Configuration)\$ProjectName$\'
+ 			.LibrarianOutput 			= '^$(SolutionDir)..\^$(Configuration)\$ProjectName$\$ProjectName$.lib'
 		}
 
 		// Executable
