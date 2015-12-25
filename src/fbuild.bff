@@ -120,6 +120,7 @@ Compiler( 'Compiler-x64-OSX' )
 	.CompilerOptions		+ .UseExceptions
 	.LibrarianOptions		= '/NODEFAULTLIB /WX /NOLOGO /OUT:"%2" "%1"'
 	.LinkerOptions			= '/NODEFAULTLIB /WX /NOLOGO /INCREMENTAL:NO /OUT:"%2" "%1" /DEBUG'
+	.LinkerOptions			+ ' kernel32.lib Ws2_32.lib User32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib'
 
 	// Optimizations
 	.CompilerDebugOptimizations		= ' /MTd /Od /RTC1 /GS /Oy- /GR- /analyze'
@@ -136,12 +137,21 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' /I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$ucrt"'
 							+ ' /I"$CATALYST_ROOT$/extern"'
 							+ ' /I"$CATALYST_ROOT$/extern/executors/include"'
+							+ ' /I"$CATALYST_ROOT$/src/core/sdk"'
 
 	.CompilerOptions		+ .BaseIncludePaths
 	.PCHOptions				+ .BaseIncludePaths
 
 	.WindowsLibPaths		= '$WindowsSDKBasePath$/lib/$WindowsSDKLibVersion$'
 
+]
+.MSVCBaseDebugConfig =
+[
+	.LinkerDebugOptions			= ' ucrtd.lib vcruntimed.lib libcmtd.lib msvcrtd.lib msvcurtd.lib'	
+]
+.MSVCBaseReleaseConfig =
+[
+	.LinkerReleaseOptions		= ' ucrt.lib vcruntime.lib libcmt.lib msvcrt.lib  msvcurt.lib'	
 ]
 
 // X86
@@ -164,6 +174,7 @@ Compiler( 'Compiler-x64-OSX' )
 .X86DebugConfig =
 [
 	Using( .X86BaseConfig )
+	Using( .MSVCBaseDebugConfig )
 	.Config					= 'Debug'
 	.CompilerOptions		+ ' /DDEBUG /DPROFILING_ENABLED'
 							+ .CompilerDebugOptimizations
@@ -171,11 +182,12 @@ Compiler( 'Compiler-x64-OSX' )
 							+ .CompilerDebugOptimizations
 	.LibrarianOptions		+ .LibrarianDebugOptimizations
 	.LinkerOptions			+ .LinkerDebugOptimizations
-							+ ' ucrtd.lib vcruntimed.lib libcmtd.lib msvcrtd.lib'
+	.LinkerOptions			+ .LinkerDebugOptions
 ]
 .X86ReleaseConfig =
 [
 	Using( .X86BaseConfig )
+	Using( .MSVCBaseReleaseConfig )
 	.Config					= 'Release'
 	.CompilerOptions		+ ' /DRELEASE'
 							+ ' /d2Zi+'		// Improve optimized debugging VS2013.3+
@@ -190,7 +202,7 @@ Compiler( 'Compiler-x64-OSX' )
 	.PCHOptions             + .CompilerReleaseOptimizations							
 	.LibrarianOptions		+ .LibrarianReleaseOptimizations
 	.LinkerOptions			+ .LinkerReleaseOptimizations
-							+ ' ucrt.lib vcruntime.lib libcmt.lib msvcrt.lib'	
+	.LinkerOptions			+ .LinkerReleaseOptions
 ]
 .X86ProfileConfig =
 [
@@ -220,6 +232,7 @@ Compiler( 'Compiler-x64-OSX' )
 .X64DebugConfig =
 [
 	Using( .X64BaseConfig )
+	Using( .MSVCBaseDebugConfig )
 	.Config					= 'Debug'
 	.CompilerOptions		+ ' /DDEBUG /DPROFILING_ENABLED'
 							+ .CompilerDebugOptimizations							
@@ -227,11 +240,12 @@ Compiler( 'Compiler-x64-OSX' )
 							+ .CompilerDebugOptimizations							
 	.LibrarianOptions		+ .LibrarianDebugOptimizations
 	.LinkerOptions			+ .LinkerDebugOptimizations
-							+ ' ucrtd.lib vcruntimed.lib libcmtd.lib msvcrtd.lib'	
+	.LinkerOptions			+ .LinkerDebugOptions
 ]
 .X64ReleaseConfig =
 [
 	Using( .X64BaseConfig )
+	Using( .MSVCBaseReleaseConfig )
 	.Config					= 'Release'
 	.CompilerOptions		+ ' /DRELEASE'
 	.PCHOptions				+ ' /DRELEASE'
@@ -245,7 +259,7 @@ Compiler( 'Compiler-x64-OSX' )
 	.PCHOptions             + .CompilerReleaseOptimizations							
 	.LibrarianOptions		+ .LibrarianReleaseOptimizations
 	.LinkerOptions			+ .LinkerReleaseOptimizations
-							+ ' ucrt.lib vcruntime.lib libcmt.lib msvcrt.lib'	
+	.LinkerOptions			+ .LinkerReleaseOptions
 ]
 .X64ProfileConfig =
 [
@@ -334,7 +348,7 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' /MACHINE:X86'
 
 	.Platform				= 'x86Clang'
-	.Config					= 'Debug'
+//	.Config					= 'Debug'
 
 	.UseExceptions			= ' -fexceptions'
 ]
@@ -495,6 +509,9 @@ Compiler( 'Compiler-x64-OSX' )
 // 
 //------------------------------------------------------------------------------
 .OutputBase	= '../tmp'
+.OutputBinBase	= '../bin'
+.OutputLibBase	= '../lib'
+.OutputIncBase	= '../include'
 
 //------------------------------------------------------------------------------
 // Unity/Blob files (shared across configs)

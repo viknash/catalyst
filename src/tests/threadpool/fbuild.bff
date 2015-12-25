@@ -20,7 +20,7 @@
     //--------------------------------------------------------------------------
     {
         // Common options
-        .UnityInputPath             = '$ProjectPath$\'
+        .UnityInputPath							   = '$ProjectPath$\'
         .UnityOutputPath            = '$OutputBase$\Unity\$ProjectPath$\'
 
         // Windows
@@ -45,6 +45,8 @@
 	{
 		Using( .Config )
 		.OutputBase + '\$Platform$-$Config$'
+		.OutputBinBase + '\$Platform$-$Config$'
+		.OutputLibBase + '\$Platform$-$Config$'
 
 		// Objects
 		ObjectList( '$ProjectName$-Lib-$Platform$-$Config$' )
@@ -53,23 +55,42 @@
 			.CompilerInputUnity			= '$ProjectName$-Unity-Windows'
 
 			// Output
-			.CompilerOutputPath			= '^$(SolutionDir)..\^$(Configuration)\$ProjectName$\'
- 			.LibrarianOutput 			= '^$(SolutionDir)..\^$(Configuration)\$ProjectName$\$ProjectName$.lib'
+			.CompilerOutputPath			= '$OutputBase$\$ProjectPath$\'
+ 			.LibrarianOutput 			= '$OutputBase$\$ProjectPath$\$ProjectName$.lib'
 		}
 
 		// Executable
 		Executable( '$ProjectName$-Exe-$Platform$-$Config$' )
 		{
-			.Libraries					= 	{ 'Core-Lib-$Platform$-$Config$'
+			.Libraries					= 	{ 'Core-Lib-$Platform$-$Config$',
+											  '$ProjectName$-Lib-$Platform$-$Config$'
 											}
+
 			.LinkerOutput				= '$OutputBase$\$ProjectPath$\$ProjectName$.exe'
 			.LinkerOptions				+ ' /SUBSYSTEM:CONSOLE'
-										+ ' kernel32.lib'
-										+ ' Ws2_32.lib'
-										+ ' LIBCMT.LIB'
-										+ ' User32.lib'
 		}
-		Alias( '$ProjectName$-$Platform$-$Config$' ) { .Targets = '$ProjectName$-Exe-$Platform$-$Config$' }
+
+		Copy( '$ProjectName$-CopyExe-$Platform$-$Config$' )
+		{
+		  .Source   = { '$OutputBase$\$ProjectPath$\$ProjectName$.exe',
+						'$OutputBase$\$ProjectPath$\$ProjectName$.pdb'
+					  }
+		  .Dest     = '$OutputBinBase$\'
+		  .PreBuildDependencies = 'Compile' 
+		}
+
+		Copy( '$ProjectName$-CopyLib-$Platform$-$Config$' )
+		{
+		  .Source   = '$OutputBase$\$ProjectPath$\$ProjectName$.lib'
+		  .Dest     = '$OutputLibBase$\'
+		}
+
+		Alias( '$ProjectName$-$Platform$-$Config$' )
+		{ 
+			.Targets = { '$ProjectName$-Exe-$Platform$-$Config$',
+						 '$ProjectName$-CopyExe-$Platform$-$Config$'
+					   }
+		}
 	}
 
 	// Windows (Clang)
@@ -86,8 +107,8 @@
 			.CompilerInputUnity			= '$ProjectName$-Unity-Windows'
 
 			// Output
-			.CompilerOutputPath			= '$OutputBase$\$ProjectName$\'
- 			.LibrarianOutput 			= '$OutputBase$\$ProjectName$\$ProjectName$.lib'
+			.CompilerOutputPath			= '$OutputBase$\$ProjectPath$\'
+ 			.LibrarianOutput 			= '$OutputBase$\$ProjectPath$\$ProjectName$.lib'
 		}
 		Alias( '$ProjectName$-$Platform$-$Config$' ) { .Targets = '$ProjectName$-Lib-$Platform$-$Config$' }
 	}
@@ -106,8 +127,8 @@
             .CompilerInputUnity         = '$ProjectName$-Unity-Linux'
 
             // Output
-            .CompilerOutputPath         = '$OutputBase$\$ProjectName$\'
-            .LibrarianOutput            = '$OutputBase$\$ProjectName$\$ProjectName$.a'
+            .CompilerOutputPath         = '$OutputBase$\$ProjectPath$\'
+            .LibrarianOutput            = '$OutputBase$\$ProjectPath$\$ProjectName$.a'
         }
 
         // Executable
@@ -139,8 +160,8 @@
             .CompilerInputUnity         = '$ProjectName$-Unity-OSX'
 
             // Output
-            .CompilerOutputPath         = '$OutputBase$\$ProjectName$\'
-            .LibrarianOutput            = '$OutputBase$\$ProjectName$\$ProjectName$.a'
+            .CompilerOutputPath         = '$OutputBase$\$ProjectPath$\'
+            .LibrarianOutput            = '$OutputBase$\$ProjectPath$\$ProjectName$.a'
         }
 
         // Executable
@@ -154,6 +175,7 @@
                                           }
             .LinkerOutput               = '$OutputBase$\Tools\FBuild\FBuildApp\FBuild'
         }
+
         Alias( '$ProjectName$-$Platform$-$Config$' ) { .Targets = '$ProjectName$-Exe-$Platform$-$Config$' }
     }	
 

@@ -10,3 +10,5 @@ node_modules
 /tools/nvm/settings.txt
 /tools/clang
 /src/*.fdb
+include
+lib

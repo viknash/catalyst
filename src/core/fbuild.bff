@@ -2,7 +2,7 @@
 //------------------------------------------------------------------------------
 {
 	.ProjectName		= 'Core'
-	.ProjectPath		= 'Core'
+	.ProjectPath		= 'core'
 	.PCHName			= 'PrecompiledHeader'
 
 	// Visual Studio Project Generation
@@ -12,8 +12,6 @@
 		.ProjectOutput				= '../tmp/VisualStudio/Projects/$ProjectName$.vcxproj'
 		.ProjectInputPaths			= '$ProjectPath$\'
 		.ProjectBasePath			= '$ProjectPath$\'
-		// Exclude Tests
-		.ProjectInputPathsExclude	= '$ProjectPath$\dfd\'
 	}
 
 	// Unity
@@ -42,19 +40,30 @@
         }
 	}
 
+	// SDK
+	//--------------------------------------------------------------------------
+	CopyDir( '$ProjectName$-CopySdk' )
+	{
+		.SourcePaths	= '$ProjectPath$\sdk\'
+		.Dest			= '$OutputIncBase$\$ProjectPath$\'
+	}
+	Alias ( '$ProjectName$-sdk' ) { .Targets = '$ProjectName$-CopySdk' }
+
 	// Windows (MSVC)
 	//--------------------------------------------------------------------------
 	ForEach( .Config in .Configs_Windows_MSVC )
 	{
 		Using( .Config )
 		.OutputBase + '\$Platform$-$Config$'
+		.OutputBinBase + '\$Platform$-$Config$'
+		.OutputLibBase + '\$Platform$-$Config$'
 
 		// Static Library
 		Library( '$ProjectName$-Lib-$Platform$-$Config$' )
 		{
 			// Precompiled Header Creation/Use
 			.PCHInputFile				= '$ProjectPath$\$PCHName$.cpp'
-			.PCHOutputFile				= '$OutputBase$\$ProjectName$\$PCHName$.pch'
+			.PCHOutputFile				= '$OutputBase$\$ProjectPath$\$PCHName$.pch'
 			.PCHOptions					+ ' /Yc"$PCHName$.h"'
 			.PCHOptions					+ ' /I"$ProjectPath$"'
 			.CompilerOptions			+ ' /Yu"$PCHName$.h" /Fp"$PCHOutputFile$"'
@@ -64,10 +73,23 @@
 			.CompilerInputUnity			= '$ProjectName$-Unity-Windows'
 
 			// Output
-			.CompilerOutputPath			= '$OutputBase$\$ProjectName$\'
- 			.LibrarianOutput 			= '$OutputBase$\$ProjectName$\$ProjectName$.lib'
+			.CompilerOutputPath			= '$OutputBase$\$ProjectPath$\'
+ 			.LibrarianOutput 			= '$OutputBase$\$ProjectPath$\$ProjectName$.lib'
 		}
-		Alias( '$ProjectName$-$Platform$-$Config$' ) { .Targets = '$ProjectName$-Lib-$Platform$-$Config$' }
+
+		Copy( '$ProjectName$-CopyLib-$Platform$-$Config$' )
+		{
+		  .Source   = '$OutputBase$\$ProjectPath$\$ProjectName$.lib'
+		  .Dest     = '$OutputLibBase$\'
+		}
+
+		Alias( '$ProjectName$-$Platform$-$Config$' )
+		{ 
+			.Targets = { '$ProjectName$-Lib-$Platform$-$Config$',
+						 '$ProjectName$-CopyLib-$Platform$-$Config$',
+						 '$ProjectName$-sdk' 
+					   }
+		}
 	}
 
 	// Windows (Clang)
@@ -85,8 +107,8 @@
 			.CompilerInputUnity			= '$ProjectName$-Unity-Windows'
 
 			// Output
-			.CompilerOutputPath			= '$OutputBase$\$ProjectName$\'
- 			.LibrarianOutput 			= '$OutputBase$\$ProjectName$\$ProjectName$.lib'
+			.CompilerOutputPath			= '$OutputBase$\$ProjectPath$\'
+ 			.LibrarianOutput 			= '$OutputBase$\$ProjectPath$\$ProjectName$.lib'
 		}
 		Alias( '$ProjectName$-$Platform$-$Config$' ) { .Targets = '$ProjectName$-Lib-$Platform$-$Config$' }
 	}
@@ -105,8 +127,8 @@
             .CompilerInputUnity         = '$ProjectName$-Unity-Linux'
 
             // Output
-            .CompilerOutputPath         = '$OutputBase$\$ProjectName$\'
-            .LibrarianOutput            = '$OutputBase$\$ProjectName$\$ProjectName$.a'
+            .CompilerOutputPath         = '$OutputBase$\$ProjectPath$\'
+            .LibrarianOutput            = '$OutputBase$\$ProjectPath$\$ProjectName$.a'
         }
         Alias( '$ProjectName$-$Platform$-$Config$' ) { .Targets = '$ProjectName$-Lib-$Platform$-$Config$' }
     }
@@ -125,8 +147,8 @@
             .CompilerInputUnity         = '$ProjectName$-Unity-OSX'
 
             // Output
-            .CompilerOutputPath         = '$OutputBase$\$ProjectName$\'
-            .LibrarianOutput            = '$OutputBase$\$ProjectName$\$ProjectName$.a'
+            .CompilerOutputPath         = '$OutputBase$\$ProjectPath$\'
+            .LibrarianOutput            = '$OutputBase$\$ProjectPath$\$ProjectName$.a'
         }
         Alias( '$ProjectName$-$Platform$-$Config$' ) { .Targets = '$ProjectName$-Lib-$Platform$-$Config$' }
     }
@@ -148,6 +170,6 @@
 	// All
 	Alias( '$ProjectName$' )
 	{
-		.Targets = { '$ProjectName$-Debug', '$ProjectName$-Profile', '$ProjectName$-Release' }
+		.Targets = { '$ProjectName$-Debug', '$ProjectName$-Profile', '$ProjectName$-Release', '$ProjectName$-sdk'  }
 	}
 }
