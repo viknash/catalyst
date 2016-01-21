@@ -76,7 +76,7 @@
 						'$OutputBase$\$ProjectPath$\$ProjectName$.pdb'
 					  }
 		  .Dest     = '$OutputBinBase$\'
-		  .PreBuildDependencies = 'Compile' 
+		  .PreBuildDependencies = '$ProjectName$-Exe-$Platform$-$Config$'
 		}
 
 		Copy( '$ProjectName$-CopyLib-$Platform$-$Config$' )
@@ -99,9 +99,11 @@
 	{
 		Using( .Config )
 		.OutputBase + '\$Platform$-$Config$'
+		.OutputBinBase + '\$Platform$-$Config$'
+		.OutputLibBase + '\$Platform$-$Config$'
 
 		// Static Library
-		Library( '$ProjectName$-Lib-$Platform$-$Config$' )
+		ObjectList( '$ProjectName$-Lib-$Platform$-$Config$' )
 		{
 			// Input (Unity)
 			.CompilerInputUnity			= '$ProjectName$-Unity-Windows'
@@ -110,7 +112,38 @@
 			.CompilerOutputPath			= '$OutputBase$\$ProjectPath$\'
  			.LibrarianOutput 			= '$OutputBase$\$ProjectPath$\$ProjectName$.lib'
 		}
-		Alias( '$ProjectName$-$Platform$-$Config$' ) { .Targets = '$ProjectName$-Lib-$Platform$-$Config$' }
+		// Executable
+		Executable( '$ProjectName$-Exe-$Platform$-$Config$' )
+		{
+			.Libraries					= 	{ 'Core-Lib-$Platform$-$Config$',
+											  '$ProjectName$-Lib-$Platform$-$Config$'
+											}
+
+			.LinkerOutput				= '$OutputBase$\$ProjectPath$\$ProjectName$.exe'
+			.LinkerOptions				+ ' /SUBSYSTEM:CONSOLE'
+		}
+
+		Copy( '$ProjectName$-CopyExe-$Platform$-$Config$' )
+		{
+		  .Source   = { '$OutputBase$\$ProjectPath$\$ProjectName$.exe',
+						'$OutputBase$\$ProjectPath$\$ProjectName$.pdb'
+					  }
+		  .Dest     = '$OutputBinBase$\'
+		  .PreBuildDependencies = '$ProjectName$-Exe-$Platform$-$Config$' 
+		}
+
+		Copy( '$ProjectName$-CopyLib-$Platform$-$Config$' )
+		{
+		  .Source   = '$OutputBase$\$ProjectPath$\$ProjectName$.lib'
+		  .Dest     = '$OutputLibBase$\'
+		}
+
+		Alias( '$ProjectName$-$Platform$-$Config$' )
+		{ 
+			.Targets = { '$ProjectName$-Exe-$Platform$-$Config$',
+						 '$ProjectName$-CopyExe-$Platform$-$Config$'
+					   }
+		}
 	}
 	
     // Linux (GCC)
@@ -190,8 +223,8 @@
 	Alias( '$ProjectName$-X86' )		{ .Targets = { '$ProjectName$-X86-Debug', '$ProjectName$-X86-Release', '$ProjectName$-X86-Profile' } }
 	Alias( '$ProjectName$-X64' )		{ .Targets = { '$ProjectName$-X64-Debug', '$ProjectName$-X64-Release', '$ProjectName$-X64-Profile' } }
 	Alias( '$ProjectName$-X86Clang' )	{ .Targets = { '$ProjectName$-X86Clang-Debug', '$ProjectName$-X86Clang-Release' } }
-    	Alias( '$ProjectName$-x64Linux' )   	{ .Targets = { '$ProjectName$-X64Linux-Debug', 	'$ProjectName$-X64Linux-Release', '$ProjectName$-X64Linux-Profile' } }
-    	Alias( '$ProjectName$-x64OSX' )   	{ .Targets = { '$ProjectName$-X64OSX-Debug', 	'$ProjectName$-X64OSX-Release',   '$ProjectName$-X64OSX-Profile' } }
+    Alias( '$ProjectName$-x64Linux' )   { .Targets = { '$ProjectName$-X64Linux-Debug', 	'$ProjectName$-X64Linux-Release', '$ProjectName$-X64Linux-Profile' } }
+    Alias( '$ProjectName$-x64OSX' )   	{ .Targets = { '$ProjectName$-X64OSX-Debug', 	'$ProjectName$-X64OSX-Release',   '$ProjectName$-X64OSX-Profile' } }
 
 	// All
 	Alias( '$ProjectName$' )

@@ -60,6 +60,22 @@ menu.addDelimiter('-', 80, 'Catalyst Help')
             });			
         })
     .addItem(
+        'Generate Executor Solution',
+        function () {
+            var grep = spawn('fbuild', ['solution'],{cwd:process.cwd()+'\\..\\extern\\executors'});
+			grep.stdout.on('data', function (data) {
+			  console.log(''+data);
+			});			
+        })		
+    .addItem(
+        'Launch executor',
+        function () {
+            var grep = spawn('devenv', ['..\\extern\\executors\\tmp\\VisualStudio\\Executor.sln']);
+            grep.on('close', function (code, signal) {
+                console.log('Exit: ' + signal);
+            });			
+        })		
+    .addItem(
         'Deploy Boost',
         function () {
             var grep = spawn('deploy.cmd', [],{cwd:process.cwd()+'\\..\\extern\\boost'});

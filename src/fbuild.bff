@@ -120,7 +120,6 @@ Compiler( 'Compiler-x64-OSX' )
 	.CompilerOptions		+ .UseExceptions
 	.LibrarianOptions		= '/NODEFAULTLIB /WX /NOLOGO /OUT:"%2" "%1"'
 	.LinkerOptions			= '/NODEFAULTLIB /WX /NOLOGO /INCREMENTAL:NO /OUT:"%2" "%1" /DEBUG'
-	.LinkerOptions			+ ' kernel32.lib Ws2_32.lib User32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib'
 
 	// Optimizations
 	.CompilerDebugOptimizations		= ' /MTd /Od /RTC1 /GS /Oy- /GR- /analyze'
@@ -145,13 +144,21 @@ Compiler( 'Compiler-x64-OSX' )
 	.WindowsLibPaths		= '$WindowsSDKBasePath$/lib/$WindowsSDKLibVersion$'
 
 ]
+.MSVCBaseCommonConfig =
+[
+	.LinkerCommonOptions		= ' kernel32.lib Ws2_32.lib User32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib'
+]
 .MSVCBaseDebugConfig =
 [
+	Using( .MSVCBaseCommonConfig )
 	.LinkerDebugOptions			= ' ucrtd.lib vcruntimed.lib libcmtd.lib msvcrtd.lib msvcurtd.lib'	
+	.LinkerDebugOptions			+ .LinkerCommonOptions
 ]
 .MSVCBaseReleaseConfig =
 [
-	.LinkerReleaseOptions		= ' ucrt.lib vcruntime.lib libcmt.lib msvcrt.lib  msvcurt.lib'	
+	Using( .MSVCBaseCommonConfig )
+	.LinkerReleaseOptions		= ' ucrt.lib vcruntime.lib libcmt.lib msvcrt.lib msvcurt.lib'	
+	.LinkerReleaseOptions		+ .LinkerCommonOptions
 ]
 
 // X86
@@ -278,7 +285,7 @@ Compiler( 'Compiler-x64-OSX' )
 	.ToolsBasePath			= '$ClangBasePath$'
 	.Compiler				= 'Compiler-x86Clang'
 	.Librarian				= '$ToolsBasePath$\bin\llvm-ar.exe'
-	.Linker					= '$VSBasePath$\VC\bin\link.exe' //'$ToolsBasePath$\lld.exe'								
+	.Linker					= '$ToolsBasePath$\bin\lld.exe'								
 
 	.WindowsLibPaths		= '$WindowsSDKBasePath$/lib/$WindowsSDKLibVersion$'
 
@@ -309,6 +316,7 @@ Compiler( 'Compiler-x64-OSX' )
                             + ' -m32'
 							+ ' -D"_X86_=1" -D_M_IX86'
 							+ ' -D"_INTEGRAL_MAX_BITS=64"'
+							//+ ' --driver-mode=cl '
 
 							// MS compatibility
 							//+ ' -fms-compatibility'
@@ -337,36 +345,38 @@ Compiler( 'Compiler-x64-OSX' )
 
     .CompilerOptionsC       = '-x c '
                             + .BaseCompilerOptions
-    .CompilerOptions        = '-std=c++14 '                     // allow C++11 features
+    .CompilerOptions        = '-std=c++14 -stdlib=libc++ '                     // allow C++14 features
                             + .BaseCompilerOptions
 
 	.PCHOptions				= .CompilerOptions // TODO: Configure this properly
 
 	.LibrarianOptions		= 'rc "%2" "%1"' // NOTE: output must come first
-	.LinkerOptions			= '/NODEFAULTLIB /WX /NOLOGO /INCREMENTAL:NO /OUT:"%2" "%1" /DEBUG'
+	.LinkerOptions			= '-flavor link /NODEFAULTLIB /WX /NOLOGO /INCREMENTAL:NO /OUT:"%2" "%1" /DEBUG'
 							+ ' /LIBPATH:"$WindowsLibPaths$um/x86" /LIBPATH:"$WindowsLibPaths$ucrt/x86" /LIBPATH:"$VSBasePath$/VC/lib"'
+							+ ' /LIBPATH:"$ClangBasePath$/lib"'
 							+ ' /MACHINE:X86'
+							+ ' libclang.lib'
 
 	.Platform				= 'x86Clang'
-//	.Config					= 'Debug'
 
 	.UseExceptions			= ' -fexceptions'
 ]
 .X86ClangReleaseConfig = 
 [
 	Using( .X86ClangBaseConfig )
+	Using( .MSVCBaseReleaseConfig )
 	.BaseCompilerOptions	// release
 							+ ' -DRELEASE'
-
 	.Config					= 'Release'
+	.LinkerOptions			+ .LinkerReleaseOptions
 ]
 .X86ClangDebugConfig = 
 [
 	Using( .X86ClangBaseConfig )
-
+	Using( .MSVCBaseDebugConfig )
 	.BaseCompilerOptions	+ ' -g'
-
 	.Config					= 'Debug'
+	.LinkerOptions			+ .LinkerDebugOptions
 ]
 
 // Linux
