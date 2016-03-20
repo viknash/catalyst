@@ -2,6 +2,6 @@
 
 int main()
 {
-	stdex::thread_pool threadPool;
+	thread_pool threadPool;
 
 }

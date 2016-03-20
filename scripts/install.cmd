@@ -23,7 +23,7 @@ For /R %TOOLSDIR%\cmake\bin %%G IN (*.exe) do (
 )
 
 REM gow
-choco install gow -y --force -ia '/S /D=%TOOLSDIR%\gow'
+choco install gow -y --force -ia '/D=%TOOLSDIR%\gow'
 For /R %TOOLSDIR%\gow\bin %%G IN (*.exe) do (
 	%TOOLSDIR%\nircmd\nircmdc shortcut "%%G" "%TOOLSDIR%\bin" "%%~nG"
 )
@@ -39,29 +39,14 @@ For /R %TOOLSDIR%\fastbuild %%G IN (*.exe) do (
 	%TOOLSDIR%\nircmd\nircmdc shortcut "%%G" "%TOOLSDIR%\bin" "%%~nG"
 )
 
-REM Install Node/NVM
+REM nvm
 nvm install 5.1.0
 nvm use 5.1.0
 
-REM Update Node Packages
 npm update
 pushd ..
 npm install
 npm install -g gulp
-popd
-
-REM Submodules
-pushd ..
-git submodule init
-git submodule update
-popd
-
-REM Clang
-mkdir ..\tmp
-pushd ..\tmp
-wget http://llvm.org/releases/3.7.0/LLVM-3.7.0-win64.exe
-LLVM-3.7.0-win64.exe /S /DIR=%TOOLSDIR%\clang
-del /q LLVM-3.7.0-win64.exe
 popd
 
 :exit

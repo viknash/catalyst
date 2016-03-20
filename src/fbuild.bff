@@ -11,6 +11,7 @@
 #import ClangBasePath
 #import WindowsSdkDir
 #import WindowsSDKLibVersion
+#import VK_SDK_PATH
 .VSBasePath			= '$VSINSTALLDIR$'
 .WindowsSDKBasePath	= '$WindowsSdkDir$'
 
@@ -84,6 +85,22 @@ Compiler( 'Compiler-x64-OSX' )
 .Executable = '/usr/bin/g++'
 }
 
+
+.IncludePaths = {
+    '$CATALYST_ROOT$/extern',
+    '$CATALYST_ROOT$/extern/executors/include',
+    '$CATALYST_ROOT$/extern/vkcpp',
+    '$CATALYST_ROOT$/src/core/sdk',
+    '$CATALYST_ROOT$/extern/boost'
+    '$VK_SDK_PATH$/Include'
+}
+
+.MSVCIncludePaths = ""
+ForEach(.IncludePath in.IncludePaths)
+{
+    ^MSVCIncludePaths + ' /I"$IncludePath$"'
+}
+
 //------------------------------------------------------------------------------
 // Configurations
 //------------------------------------------------------------------------------
@@ -112,6 +129,7 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' /D"WIN32_LEAN_AND_MEAN" /D_WIN32 /D__WINDOWS__'
 							+ ' /D"_CRT_SECURE_NO_WARNINGS"' // don't warn about unsafe functions
                             + ' /D"_WINSOCK_DEPRECATED_NO_WARNINGS"' // don't warn about deprecated winsock functions - TODO:C Update API use
+                            + ' /DVKCPP_ENHANCED_MODE'
 	.UseExceptions			= ' /EHsc'
 	.PCHOptions				= .CompilerOptions
 							+ ' /Fp"%2" /Fo"%3"'
@@ -134,9 +152,7 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' /I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$um"'
 							+ ' /I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$shared"'
 							+ ' /I"$WindowsSDKBasePath$include/$WindowsSDKLibVersion$ucrt"'
-							+ ' /I"$CATALYST_ROOT$/extern"'
-							+ ' /I"$CATALYST_ROOT$/extern/executors/include"'
-							+ ' /I"$CATALYST_ROOT$/src/core/sdk"'
+							+ '$MSVCIncludePaths$'
 
 	.CompilerOptions		+ .BaseIncludePaths
 	.PCHOptions				+ .BaseIncludePaths
@@ -518,10 +534,10 @@ Compiler( 'Compiler-x64-OSX' )
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-.OutputBase	= '../tmp'
-.OutputBinBase	= '../bin'
-.OutputLibBase	= '../lib'
-.OutputIncBase	= '../include'
+.OutputBase = '../tmp'
+.OutputBinBase = '../bin'
+.OutputLibBase = '../lib'
+.OutputIncBase = '../include'
 
 //------------------------------------------------------------------------------
 // Unity/Blob files (shared across configs)
@@ -531,15 +547,20 @@ Compiler( 'Compiler-x64-OSX' )
 //------------------------------------------------------------------------------
 // VisualStudio Project Generation
 //------------------------------------------------------------------------------
-.ProjectCommon = 
+.IncludeSearchPaths = ""
+ForEach(.IncludePath in .IncludePaths)
+{
+    ^IncludeSearchPaths + ';$IncludePath$'
+}
+.ProjectCommon =
 [
-	.ProjectBuildCommand		= 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache ^$(ProjectName)-^$(Configuration)'
-	.ProjectRebuildCommand		= 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -clean ^$(ProjectName)-^$(Configuration)'
-	.OutputDirectory			= '^$(SolutionDir)..\tmp2'
-	.IntermediateDirectory		= '^$(SolutionDir)..\tmp2'
-	.Platform = 'Win32' // unused
-	.PlatformToolset = 'v140'
-	.IncludeSearchPath			= '^$(SolutionDir)..\..;.\'
+    .ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache ^$(ProjectName)-^$(Configuration)'
+    .ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -clean ^$(ProjectName)-^$(Configuration)'
+    .OutputDirectory = '^$(SolutionDir)..\tmp2'
+    .IntermediateDirectory = '^$(SolutionDir)..\tmp2'
+    .Platform = 'Win32' // unused
+    .PlatformToolset = 'v140'
+    .IncludeSearchPath = '^$(SolutionDir)..\..;.\;^$(SolutionDir)..\..\include\$IncludeSearchPaths$'
 	.X86Defines					= 'WIN32_LEAN_AND_MEAN;_WIN32;__WINDOWS__;WIN32;'
 	.X64Defines					= 'WIN32_LEAN_AND_MEAN;_WIN32;__WINDOWS__;WIN64;'
 	.DebugDefines				= 'DEBUG;PROFILING_ENABLED'
@@ -612,6 +633,7 @@ VCXProject( 'UpdateSolution-proj' )
 // Core
 #include "core\fbuild.bff"
 #include "tests\threadpool\fbuild.bff"
+#include "tests\vulkan\fbuild.bff"
 
 // Aliases : All-$Platform$-$Config$
 //------------------------------------------------------------------------------
@@ -735,7 +757,9 @@ VSSolution( 'solution' )
 	.Folder_2_Tests =
 	[ 
 		.Path			= 'Tests'
-        .Projects		=   { 'TestThreadPool-proj' }
+        .Projects		=   {   'TestThreadPool-proj',
+                                'TestVulkan-proj'
+                            }
     ]
 
     .SolutionFolders	=	{ .Folder_1_Engine,

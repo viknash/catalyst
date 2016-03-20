@@ -178,3 +178,15 @@
 [submodule "extern/ig-debugheap"]
 	path = extern/ig-debugheap
 	url = https://github.com/viknash/ig-debugheap.git
+[submodule "extern/folly"]
+	path = extern/folly
+	url = https://github.com/viknash/folly.git
+[submodule "extern/vkcpp"]
+	path = extern/vkcpp
+	url = https://github.com/viknash/vkcpp.git
+[submodule "extern/Vulkan-Docs"]
+	path = extern/Vulkan-Docs
+	url = https://github.com/viknash/Vulkan-Docs.git
+[submodule "extern/tinyxml"]
+	path = extern/tinyxml
+	url = https://github.com/viknash/tinyxml.git

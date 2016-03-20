@@ -12,6 +12,7 @@ set SYS_ARCH=32
 set CATALYST_ROOT=%CD%
 set PATH=%CD%\bin;%CD%\tools\bin;%PATH%
 set PATH=%CD%\tools\bin;%PATH%
+set PATH=%CD%\tools\cmake\bin;%PATH%
 set PATH=%CD%\tools\nvm;%PATH%
 set PATH=%CD%\tools\fastbuild;%PATH%
 set PATH=%CD%\scripts;%PATH%
