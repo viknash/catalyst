@@ -68,14 +68,29 @@ menu.addDelimiter('-', 80, 'Catalyst Help')
 			});			
         })		
     .addItem(
+        'Launch FASTBuild',
+        function () {
+            var grep = spawn('devenv', ['..\\extern\\fastbuild\\tmp\\VisualStudio\\FASTBuild.sln']);
+            grep.on('close', function (code, signal) {
+                console.log('Exit: ' + signal);
+            });			
+        })		
+    .addItem(
+        'Generate FASTBuild Solution',
+        function () {
+            var grep = spawn('fbuild', ['solution'],{cwd:process.cwd()+'\\..\\extern\\fastbuild\\Code'});
+			grep.stdout.on('data', function (data) {
+			  console.log(''+data);
+			});			
+        })		
+    .addItem(
         'Launch executor',
         function () {
             var grep = spawn('devenv', ['..\\extern\\executors\\tmp\\VisualStudio\\Executor.sln']);
             grep.on('close', function (code, signal) {
                 console.log('Exit: ' + signal);
             });			
-        })		
-    .addItem(
+        })		    .addItem(
         'Deploy Boost',
         function () {
             var grep = spawn('deploy.cmd', [],{cwd:process.cwd()+'\\..\\extern\\boost'});

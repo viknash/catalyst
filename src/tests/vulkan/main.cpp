@@ -2,7 +2,13 @@
 
 int main()
 {
-	thread_pool threadPool;
     vector<LayerProperties> layerProperties;
-    Result result = enumerateInstanceLayerProperties(layerProperties);
+    ///*Result result = */enumerateInstanceLayerProperties(layerProperties);
+    future<Result> fut = defer( 
+        [&](yield_context yield)
+    {
+        this_thread::sleep_for(5s); return enumerateInstanceLayerProperties(layerProperties);
+    }, use_future);
+    fut.get();
+    return 0;
 }

@@ -146,6 +146,56 @@
 		}
 	}
 	
+    // Windows (GCC)
+    //--------------------------------------------------------------------------
+    ForEach(.Config in.Configs_Windows_GCC)
+    {
+        Using(.Config)
+            .OutputBase + '\$Platform$-$Config$'
+            .OutputBinBase + '\$Platform$-$Config$'
+            .OutputLibBase + '\$Platform$-$Config$'
+
+            // Static Library
+            ObjectList('$ProjectName$-Lib-$Platform$-$Config$')
+        {
+            // Input (Unity)
+            .CompilerInputUnity = '$ProjectName$-Unity-Windows'
+
+                // Output
+                .CompilerOutputPath = '$OutputBase$\$ProjectPath$\'
+                .LibrarianOutput = '$OutputBase$\$ProjectPath$\$ProjectName$.a'
+        }
+        // Executable
+        Executable('$ProjectName$-Exe-$Platform$-$Config$')
+        {
+            .Libraries = { 'Core-Lib-$Platform$-$Config$',
+                '$ProjectName$-Lib-$Platform$-$Config$'
+            }
+
+                .LinkerOutput = '$OutputBase$\$ProjectPath$\$ProjectName$.exe'
+        }
+
+        Copy('$ProjectName$-CopyExe-$Platform$-$Config$')
+        {
+            .Source = { '$OutputBase$\$ProjectPath$\$ProjectName$.exe' }
+                .Dest = '$OutputBinBase$\'
+                .PreBuildDependencies = '$ProjectName$-Exe-$Platform$-$Config$'
+        }
+
+        Copy('$ProjectName$-CopyLib-$Platform$-$Config$')
+        {
+            .Source = '$OutputBase$\$ProjectPath$\$ProjectName$.a'
+                .Dest = '$OutputLibBase$\'
+        }
+
+        Alias('$ProjectName$-$Platform$-$Config$')
+        {
+            .Targets = { '$ProjectName$-Exe-$Platform$-$Config$',
+                '$ProjectName$-CopyExe-$Platform$-$Config$'
+            }
+        }
+    }
+
     // Linux (GCC)
     //--------------------------------------------------------------------------
     ForEach( .Config in .Configs_Linux_GCC )

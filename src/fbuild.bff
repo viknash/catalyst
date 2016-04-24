@@ -21,7 +21,7 @@
 Settings
 {
     #if __WINDOWS__
-        .Environment	= { "PATH=$VSBasePath$\Common7\IDE\;$VSBasePath$\VC\bin\",
+        .Environment	= { "PATH=$VSBasePath$\Common7\IDE\;$VSBasePath$\VC\bin\;$CATALYST_ROOT$\tools\mingw\mingw64\bin\",
                             "TMP=$CATALYST_ROOT$\tmp",
                             "SystemRoot=$windir$" }
         .CachePath		= "$CATALYST_ROOT$\tmp\.fbuild.cache"
@@ -76,6 +76,14 @@ Compiler( 'Compiler-x86Clang' )
 	.Root		= '$ClangBasePath$'
 	.Executable	= '$Root$\bin\clang++.exe'
 }
+Compiler('Compiler-x64-GCC')
+{
+    .Root = '$CATALYST_ROOT$\tools\mingw\mingw64'
+    .Executable = '$Root$\bin\gcc.exe'
+    .ExtraFiles = { '$Root$\bin\libwinpthread-1.dll',
+                    '$Root$\libexec\gcc\x86_64-w64-mingw32\5.3.0\cc1plus.exe'
+                  }
+}
 Compiler( 'Compiler-x64-Linux' )
 {
     .Executable = '/usr/bin/gcc'
@@ -86,7 +94,7 @@ Compiler( 'Compiler-x64-OSX' )
 }
 
 
-.IncludePaths = {
+.CommonIncludePaths = {
     '$CATALYST_ROOT$/extern',
     '$CATALYST_ROOT$/extern/executors/include',
     '$CATALYST_ROOT$/extern/vkcpp',
@@ -95,10 +103,20 @@ Compiler( 'Compiler-x64-OSX' )
     '$VK_SDK_PATH$/Include'
 }
 
+.CommonDefines = {
+    'VKCPP_ENHANCED_MODE',
+}
+
 .MSVCIncludePaths = ""
-ForEach(.IncludePath in.IncludePaths)
+ForEach(.IncludePath in .CommonIncludePaths)
 {
     ^MSVCIncludePaths + ' /I"$IncludePath$"'
+}
+
+.MSVCDefines = ""
+ForEach(.Define in .CommonDefines)
+{
+    ^MSVCDefines + ' /D"$Define$"'
 }
 
 //------------------------------------------------------------------------------
@@ -129,7 +147,8 @@ ForEach(.IncludePath in.IncludePaths)
 							+ ' /D"WIN32_LEAN_AND_MEAN" /D_WIN32 /D__WINDOWS__'
 							+ ' /D"_CRT_SECURE_NO_WARNINGS"' // don't warn about unsafe functions
                             + ' /D"_WINSOCK_DEPRECATED_NO_WARNINGS"' // don't warn about deprecated winsock functions - TODO:C Update API use
-                            + ' /DVKCPP_ENHANCED_MODE'
+                            + '$MSVCDefines$'
+
 	.UseExceptions			= ' /EHsc'
 	.PCHOptions				= .CompilerOptions
 							+ ' /Fp"%2" /Fo"%3"'
@@ -395,6 +414,162 @@ ForEach(.IncludePath in.IncludePaths)
 	.LinkerOptions			+ .LinkerDebugOptions
 ]
 
+.BoostLibs = {
+    'atomic',
+    'chrono',
+    'container',
+    'coroutine',
+    'context',
+    'date_time',
+    'exception',
+    'filesystem',
+    'math_c99f',
+    'math_c99',
+    'math_tr1f',
+    'math_tr1l',
+    'math_tr1l',
+    'math_tr1l',
+    'math_tr1l',
+    'math_tr1',
+    'random',
+    'system',
+    'thread',
+    'wave',
+}
+
+.GCCIncludePaths = ""
+ForEach(.IncludePath in .CommonIncludePaths)
+{
+    ^GCCIncludePaths + ' -I"$IncludePath$"'
+}
+
+.GCCDefines = ""
+ForEach(.Define in .CommonDefines)
+{
+    ^GCCDefines + ' -D$Define$'
+}
+
+// GCC
+//------------------------------------------------------------------------------
+.GCCBaseConfig =
+[
+    .Compiler = 'Compiler-x64-GCC'
+    .Librarian = '$CATALYST_ROOT$\tools\mingw\mingw64\bin\ar'
+    .Linker = '$CATALYST_ROOT$\tools\mingw\mingw64\bin\g++'
+
+    .BaseCompilerOptions = ' -o "%2" "%1" -c -g'
+    + ' -I$CATALYST_ROOT$/extern'
+    + ' -I$CATALYST_ROOT$/extern/executors/include'
+    + ' -I$CATALYST_ROOT$/src/core/sdk'
+    + ' -I$CATALYST_ROOT$/extern/boost'
+    + ' -I$CATALYST_ROOT$/tools/mingw/mingw64'
+    + ' -Wall'
+    + ' -Werror'  // warnings as errors
+    + ' -Wfatal-errors'
+    + ' -Wno-error=unknown-pragmas'
+    + ' -Wno-unknown-pragmas'
+    + ' -Wa,-mbig-obj' // Big Obj 
+    + ^GCCIncludePaths
+    + '$GCCDefines$'
+
+    .CompilerOptionsC = .BaseCompilerOptions
+    .CompilerOptions = .BaseCompilerOptions
+    + ' -std=c++1y'                     // allow C++11 features
+    + ' -Wno-invalid-offsetof' // we get the offset of members in non-POD types
+
+    .LinkerOptions = '"%1" -o "%2"'
+    .LinkerOptions + ' -L$CATALYST_ROOT$/extern/boost/stage/lib/'
+    .LibrarianOptions = 'rcs "%2" "%1"'
+
+    // Optimizations
+    .CompilerDebugOptimizations = ' -O0'
+    .CompilerReleaseOptimizations = ' -O3'
+    .LibrarianDebugOptimizations = ''
+    .LibrarianReleaseOptimizations = ''
+    .LinkerDebugOptimizations = ''
+    .LinkerReleaseOptimizations = ''
+
+    .LinkerDebugLibs = ''
+    .LinkerReleaseLibs = ''
+
+    ForEach(.BoostLib in.BoostLibs)
+    {
+        ^LinkerDebugLibs    + ' -lboost_$BoostLib$-mgw53-mt-d-1_60'
+        ^LinkerReleaseLibs  + ' -lboost_$BoostLib$-mgw53-mt-1_60'
+    }
+
+    .LinkerDebugLibs + ' -lvulkan-1'
+    .LinkerReleaseLibs + ' -lvulkan-1'
+    .UseExceptions = ' -fexceptions'
+]
+.X64BaseConfig_GCC =
+[
+    Using(.GCCBaseConfig)
+    .Platform = 'x64GCC'
+    .BaseCompilerOptions + ' -m64' // x86-64
+    .LinkerOptions + ' -L$VK_SDK_PATH$/Bin'
+]
+.X64DebugConfig_GCC =
+[
+    Using(.X64BaseConfig_GCC)
+    .Config = 'Debug'
+    .CompilerOptions + ' -DDEBUG -DPROFILING_ENABLED'
+    + .CompilerDebugOptimizations
+    .LibrarianOptions + .LibrarianDebugOptimizations
+    .LinkerOptions + .LinkerDebugOptimizations
+    .LinkerOptions + .LinkerDebugLibs
+]
+.X64ReleaseConfig_GCC =
+[
+    Using(.X64BaseConfig_GCC)
+    .Config = 'Release'
+    .CompilerOptions + ' -DRELEASE'
+    + .CompilerReleaseOptimizations
+    .LibrarianOptions + .LibrarianReleaseOptimizations
+    .LinkerOptions + .LinkerReleaseOptimizations
+    .LinkerOptions + .LinkerReleaseLibs
+]
+.X64ProfileConfig_GCC =
+[
+    Using(.X64ReleaseConfig_GCC) // Note: based on Release config
+    .Config = 'Profile'
+    .CompilerOptions + ' -DPROFILING_ENABLED'
+]
+.X86BaseConfig_GCC =
+[
+    Using(.GCCBaseConfig)
+    .Platform = 'x86GCC'
+    .BaseCompilerOptions + ' -m32' // x86
+    .LinkerOptions + ' -L$VK_SDK_PATH$/Bin32'
+]
+.X86DebugConfig_GCC =
+[
+    Using(.X86BaseConfig_GCC)
+    .Config = 'Debug'
+    .CompilerOptions + ' -DDEBUG -DPROFILING_ENABLED'
+    + .CompilerDebugOptimizations
+    .LibrarianOptions + .LibrarianDebugOptimizations
+    .LinkerOptions + .LinkerDebugOptimizations
+    .LinkerOptions + .LinkerDebugLibs
+]
+.X86ReleaseConfig_GCC =
+[
+    Using(.X86BaseConfig_GCC)
+    .Config = 'Release'
+    .CompilerOptions + ' -DRELEASE'
+    + .CompilerReleaseOptimizations
+    .LibrarianOptions + .LibrarianReleaseOptimizations
+    .LinkerOptions + .LinkerReleaseOptimizations
+    .LinkerOptions + .LinkerReleaseLibs
+]
+.X86ProfileConfig_GCC =
+[
+    Using(.X86ReleaseConfig_GCC) // Note: based on Release config
+    .Config = 'Profile'
+    .CompilerOptions + ' -DPROFILING_ENABLED'
+]
+
+
 // Linux
 //------------------------------------------------------------------------------
 .LinuxBaseConfig =
@@ -548,13 +723,13 @@ ForEach(.IncludePath in.IncludePaths)
 // VisualStudio Project Generation
 //------------------------------------------------------------------------------
 .IncludeSearchPaths = ""
-ForEach(.IncludePath in .IncludePaths)
+ForEach(.IncludePath in .CommonIncludePaths)
 {
     ^IncludeSearchPaths + ';$IncludePath$'
 }
 .ProjectCommon =
 [
-    .ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache ^$(ProjectName)-^$(Configuration)'
+    .ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -showcmds ^$(ProjectName)-^$(Configuration)'
     .ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -clean ^$(ProjectName)-^$(Configuration)'
     .OutputDirectory = '^$(SolutionDir)..\tmp2'
     .IntermediateDirectory = '^$(SolutionDir)..\tmp2'
@@ -574,18 +749,26 @@ ForEach(.IncludePath in .IncludePaths)
 .ProjectX64Debug		= [ Using( .ProjectCommon )	.Config = 'x64-Debug'	.PreprocessorDefinitions = .X64Defines + .DebugDefines ]
 .ProjectX64Profile		= [ Using( .ProjectCommon )	.Config = 'x64-Profile' .PreprocessorDefinitions = .X64Defines + .ProfileDefines ]
 .ProjectX64Release		= [ Using( .ProjectCommon )	.Config = 'x64-Release' .PreprocessorDefinitions = .X64Defines + .ReleaseDefines ]
+.ProjectX86GCCDebug = [Using(.ProjectCommon).Config = 'x86GCC-Debug']
+.ProjectX86GCCProfile = [Using(.ProjectCommon).Config = 'x86GCC-Profile']
+.ProjectX86GCCRelease = [Using(.ProjectCommon).Config = 'x86GCC-Release']
+.ProjectX64GCCDebug = [Using(.ProjectCommon).Config = 'x64GCC-Debug']
+.ProjectX64GCCProfile = [Using(.ProjectCommon).Config = 'x64GCC-Profile']
+.ProjectX64GCCRelease = [Using(.ProjectCommon).Config = 'x64GCC-Release']
 .ProjectX86ClangDebug	= [ Using( .ProjectCommon )	.Config = 'x86Clang-Debug' ]
 .ProjectX86ClangRelease	= [ Using( .ProjectCommon )	.Config = 'x86Clang-Release' ]
 
 .ProjectConfigs = { .ProjectX86Debug, .ProjectX86Profile, .ProjectX86Release,
 					.ProjectX64Debug, .ProjectX64Profile, .ProjectX64Release,
+                    .ProjectX86GCCDebug,.ProjectX86GCCProfile,.ProjectX86GCCRelease,
+                    .ProjectX64GCCDebug,.ProjectX64GCCProfile,.ProjectX64GCCRelease,
 					.ProjectX86ClangDebug, .ProjectX86ClangRelease }
 
 // Project to compile everything
 VCXProject( 'All-proj' )
 {
 	.ProjectOutput				= '../tmp/VisualStudio/Projects/All.vcxproj'
-	.ProjectFiles			= { '.\fbuild.bff' }
+	.ProjectFiles			    = { '.\fbuild.bff' }
 	.ProjectBasePath			= '.\'
 }
 
@@ -608,11 +791,19 @@ VCXProject( 'UpdateSolution-proj' )
     .ProjectX64Debug		= [ Using( .ProjectX64Debug )	    Using( .GenerateProjectsCommands ) ]
     .ProjectX64Profile		= [ Using( .ProjectX64Profile )	    Using( .GenerateProjectsCommands ) ]
     .ProjectX64Release		= [ Using( .ProjectX64Release )	    Using( .GenerateProjectsCommands ) ]
+    .ProjectX86GCCDebug     = [ Using( .ProjectX86GCCDebug )	Using( .GenerateProjectsCommands ) ]
+    .ProjectX86GCCProfile   = [ Using( .ProjectX86GCCProfile )  Using( .GenerateProjectsCommands ) ]
+    .ProjectX86GCCRelease   = [ Using( .ProjectX86GCCRelease )  Using( .GenerateProjectsCommands ) ]
+    .ProjectX64GCCDebug     = [ Using( .ProjectX64GCCDebug )	Using( .GenerateProjectsCommands ) ]
+    .ProjectX64GCCProfile   = [ Using( .ProjectX64GCCProfile )  Using( .GenerateProjectsCommands ) ]
+    .ProjectX64GCCRelease   = [ Using( .ProjectX64GCCRelease )  Using( .GenerateProjectsCommands ) ]
     .ProjectX86ClangDebug	= [ Using( .ProjectX86ClangDebug )  Using( .GenerateProjectsCommands ) ]
     .ProjectX86ClangRelease	= [ Using( .ProjectX86ClangRelease )  Using( .GenerateProjectsCommands ) ]
 
     .ProjectConfigs = { .ProjectX86Debug, .ProjectX86Profile, .ProjectX86Release,
 					    .ProjectX64Debug, .ProjectX64Profile, .ProjectX64Release,
+                        .ProjectX86GCCDebug,.ProjectX86GCCProfile,.ProjectX86GCCRelease,
+                        .ProjectX64GCCDebug,.ProjectX64GCCProfile,.ProjectX64GCCRelease,
 					    .ProjectX86ClangDebug, .ProjectX86ClangRelease }
 }
 
@@ -622,11 +813,15 @@ VCXProject( 'UpdateSolution-proj' )
 			 .X64DebugConfig, .X64ProfileConfig, .X64ReleaseConfig,
 			 .X86ClangReleaseConfig, .X86ClangDebugConfig,
 			 .X64DebugConfig_Linux, .X64ProfileConfig_Linux, .X64ReleaseConfig_Linux,
+             .X86DebugConfig_GCC, .X86ProfileConfig_GCC, .X86ReleaseConfig_GCC,
+             .X64DebugConfig_GCC, .X64ProfileConfig_GCC, .X64ReleaseConfig_GCC,
              .X64DebugConfig_OSX, .X64ProfileConfig_OSX, .X64ReleaseConfig_OSX }
 
 .Configs_Windows_MSVC	= { .X86DebugConfig, .X86ProfileConfig, .X86ReleaseConfig,
 							.X64DebugConfig, .X64ProfileConfig, .X64ReleaseConfig }
 .Configs_Windows_Clang	= { .X86ClangReleaseConfig, .X86ClangDebugConfig }
+.Configs_Windows_GCC = { .X86DebugConfig_GCC, .X86ProfileConfig_GCC, .X86ReleaseConfig_GCC,
+                         .X64DebugConfig_GCC, .X64ProfileConfig_GCC, .X64ReleaseConfig_GCC }
 .Configs_Linux_GCC      = { .X64DebugConfig_Linux, .X64ProfileConfig_Linux, .X64ReleaseConfig_Linux }
 .Configs_OSX_Clang      = { .X64DebugConfig_OSX, .X64ProfileConfig_OSX, .X64ReleaseConfig_OSX }
 
@@ -669,7 +864,20 @@ Alias( 'All-x86Clang' )
 							'All-x86Clang-Release',
 						  }
 }
-
+Alias('All-x86GCC')
+{
+    .Targets = { 'All-x86GCC-Debug',
+        'All-x86GCC-Release',
+        'All-x86GCC-Profile'
+    }
+}
+Alias('All-x64GCC')
+{
+    .Targets = { 'All-x64GCC-Debug',
+        'All-x64GCC-Release',
+        'All-x64GCC-Profile'
+    }
+}
 // Aliases : All
 //------------------------------------------------------------------------------
 #if __WINDOWS__

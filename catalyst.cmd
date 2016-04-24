@@ -16,6 +16,7 @@ set PATH=%CD%\tools\cmake\bin;%PATH%
 set PATH=%CD%\tools\nvm;%PATH%
 set PATH=%CD%\tools\fastbuild;%PATH%
 set PATH=%CD%\scripts;%PATH%
+set PATH=%CD%\tools\mingw\mingw64\bin;%PATH%
 set NVM_PATH=%CD%\tools\nvm
 set NVM_HOME=%NVM_PATH%
 set NVM_SYMLINK=%SYSTEMDRIVE%\Program Files\nodejs
