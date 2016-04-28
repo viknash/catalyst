@@ -460,6 +460,7 @@ ForEach(.Define in .CommonDefines)
     .BaseCompilerOptions = ' -o "%2" "%1" -c -g'
     + ' -I$CATALYST_ROOT$/extern'
     + ' -I$CATALYST_ROOT$/extern/executors/include'
+    + ' -I$CATALYST_ROOT$/extern/reckless/reckless/include'
     + ' -I$CATALYST_ROOT$/src/core/sdk'
     + ' -I$CATALYST_ROOT$/extern/boost'
     + ' -I$CATALYST_ROOT$/tools/mingw/mingw64'
@@ -468,6 +469,7 @@ ForEach(.Define in .CommonDefines)
     + ' -Wfatal-errors'
     + ' -Wno-error=unknown-pragmas'
     + ' -Wno-unknown-pragmas'
+    + ' -Wno-unused-but-set-variable'
     + ' -Wa,-mbig-obj' // Big Obj 
     + ^GCCIncludePaths
     + '$GCCDefines$'
@@ -479,6 +481,7 @@ ForEach(.Define in .CommonDefines)
 
     .LinkerOptions = '"%1" -o "%2"'
     .LinkerOptions + ' -L$CATALYST_ROOT$/extern/boost/stage/lib/'
+    .LinkerOptions + ' -L$CATALYST_ROOT$/extern/reckless/reckless/lib'
     .LibrarianOptions = 'rcs "%2" "%1"'
 
     // Optimizations
@@ -489,8 +492,9 @@ ForEach(.Define in .CommonDefines)
     .LinkerDebugOptimizations = ''
     .LinkerReleaseOptimizations = ''
 
-    .LinkerDebugLibs = ''
-    .LinkerReleaseLibs = ''
+    .LinkerLibs = ' -lvulkan-1 -lasynclog'
+    .LinkerDebugLibs = .LinkerLibs
+    .LinkerReleaseLibs = .LinkerLibs
 
     ForEach(.BoostLib in.BoostLibs)
     {
@@ -498,8 +502,6 @@ ForEach(.Define in .CommonDefines)
         ^LinkerReleaseLibs  + ' -lboost_$BoostLib$-mgw53-mt-1_60'
     }
 
-    .LinkerDebugLibs + ' -lvulkan-1'
-    .LinkerReleaseLibs + ' -lvulkan-1'
     .UseExceptions = ' -fexceptions'
 ]
 .X64BaseConfig_GCC =

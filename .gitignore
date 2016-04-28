@@ -13,3 +13,5 @@ node_modules
 include
 lib
 mingw
+x64GCC-Debug
+log.txt
