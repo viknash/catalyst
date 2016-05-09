@@ -100,11 +100,17 @@ Compiler( 'Compiler-x64-OSX' )
     '$CATALYST_ROOT$/extern/vkcpp',
     '$CATALYST_ROOT$/src/core/sdk',
     '$CATALYST_ROOT$/extern/boost'
-    '$VK_SDK_PATH$/Include'
+    '$VK_SDK_PATH$/Include',
+    '$CATALYST_ROOT$/extern/reckless/reckless/include'
 }
 
 .CommonDefines = {
     'VKCPP_ENHANCED_MODE',
+}
+
+.CommonLibraryPaths = {
+    '$CATALYST_ROOT$/extern/boost/stage/lib/',
+    '$CATALYST_ROOT$/extern/reckless/reckless/lib'
 }
 
 .MSVCIncludePaths = ""
@@ -117,6 +123,12 @@ ForEach(.IncludePath in .CommonIncludePaths)
 ForEach(.Define in .CommonDefines)
 {
     ^MSVCDefines + ' /D"$Define$"'
+}
+
+.MSVCLibraryPaths = ""
+ForEach(.LibraryPath in.CommonLibraryPaths)
+{
+    ^MSVCLibraryPaths + ' /LIBPATH:"$LibraryPath$"'
 }
 
 //------------------------------------------------------------------------------
@@ -157,6 +169,7 @@ ForEach(.Define in .CommonDefines)
 	.CompilerOptions		+ .UseExceptions
 	.LibrarianOptions		= '/NODEFAULTLIB /WX /NOLOGO /OUT:"%2" "%1"'
 	.LinkerOptions			= '/NODEFAULTLIB /WX /NOLOGO /INCREMENTAL:NO /OUT:"%2" "%1" /DEBUG'
+                            + ^MSVCLibraryPaths
 
 	// Optimizations
 	.CompilerDebugOptimizations		= ' /MTd /Od /RTC1 /GS /Oy- /GR- /analyze'
@@ -449,6 +462,12 @@ ForEach(.Define in .CommonDefines)
     ^GCCDefines + ' -D$Define$'
 }
 
+.GCCLibraryPaths = ""
+ForEach(.LibraryPath in .CommonLibraryPaths)
+{
+    ^GCCLibraryPaths + ' -L"$LibraryPath$"'
+}
+
 // GCC
 //------------------------------------------------------------------------------
 .GCCBaseConfig =
@@ -458,11 +477,6 @@ ForEach(.Define in .CommonDefines)
     .Linker = '$CATALYST_ROOT$\tools\mingw\mingw64\bin\g++'
 
     .BaseCompilerOptions = ' -o "%2" "%1" -c -g'
-    + ' -I$CATALYST_ROOT$/extern'
-    + ' -I$CATALYST_ROOT$/extern/executors/include'
-    + ' -I$CATALYST_ROOT$/extern/reckless/reckless/include'
-    + ' -I$CATALYST_ROOT$/src/core/sdk'
-    + ' -I$CATALYST_ROOT$/extern/boost'
     + ' -I$CATALYST_ROOT$/tools/mingw/mingw64'
     + ' -Wall'
     + ' -Werror'  // warnings as errors
@@ -480,8 +494,7 @@ ForEach(.Define in .CommonDefines)
     + ' -Wno-invalid-offsetof' // we get the offset of members in non-POD types
 
     .LinkerOptions = '"%1" -o "%2"'
-    .LinkerOptions + ' -L$CATALYST_ROOT$/extern/boost/stage/lib/'
-    .LinkerOptions + ' -L$CATALYST_ROOT$/extern/reckless/reckless/lib'
+    + ^GCCLibraryPaths
     .LibrarianOptions = 'rcs "%2" "%1"'
 
     // Optimizations
@@ -737,7 +750,7 @@ ForEach(.IncludePath in .CommonIncludePaths)
     .IntermediateDirectory = '^$(SolutionDir)..\tmp2'
     .Platform = 'Win32' // unused
     .PlatformToolset = 'v140'
-    .IncludeSearchPath = '^$(SolutionDir)..\..;.\;^$(SolutionDir)..\..\include\$IncludeSearchPaths$'
+    .IncludeSearchPath = '^$(SolutionDir)..\..;.\;^$(SolutionDir)..\..\include\;$IncludeSearchPaths$'
 	.X86Defines					= 'WIN32_LEAN_AND_MEAN;_WIN32;__WINDOWS__;WIN32;'
 	.X64Defines					= 'WIN32_LEAN_AND_MEAN;_WIN32;__WINDOWS__;WIN64;'
 	.DebugDefines				= 'DEBUG;PROFILING_ENABLED'
