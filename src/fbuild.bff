@@ -109,8 +109,11 @@ Compiler( 'Compiler-x64-OSX' )
 }
 
 .CommonLibraryPaths = {
-    '$CATALYST_ROOT$/extern/boost/stage/lib/',
-    '$CATALYST_ROOT$/extern/reckless/reckless/lib'
+    '$CATALYST_ROOT$/extern/boost/stage/lib/'
+}
+
+.CommonConfigSpecificLibraryPaths = {
+    '$CATALYST_ROOT$/extern/reckless/lib'
 }
 
 .MSVCIncludePaths = ""
@@ -505,7 +508,7 @@ ForEach(.LibraryPath in .CommonLibraryPaths)
     .LinkerDebugOptimizations = ''
     .LinkerReleaseOptimizations = ''
 
-    .LinkerLibs = ' -lvulkan-1 -lasynclog'
+    .LinkerLibs = ' -lvulkan-1 -lReckless'
     .LinkerDebugLibs = .LinkerLibs
     .LinkerReleaseLibs = .LinkerLibs
 
@@ -533,6 +536,11 @@ ForEach(.LibraryPath in .CommonLibraryPaths)
     .LibrarianOptions + .LibrarianDebugOptimizations
     .LinkerOptions + .LinkerDebugOptimizations
     .LinkerOptions + .LinkerDebugLibs
+
+    ForEach(.LibraryPath in.CommonConfigSpecificLibraryPaths)
+    {
+        ^LinkerOptions + ' -L"$LibraryPath$/$Platform$-$Config$"'
+    }
 ]
 .X64ReleaseConfig_GCC =
 [
@@ -543,12 +551,22 @@ ForEach(.LibraryPath in .CommonLibraryPaths)
     .LibrarianOptions + .LibrarianReleaseOptimizations
     .LinkerOptions + .LinkerReleaseOptimizations
     .LinkerOptions + .LinkerReleaseLibs
+
+    ForEach(.LibraryPath in.CommonConfigSpecificLibraryPaths)
+    {
+        ^LinkerOptions + ' -L"$LibraryPath$/$Platform$-$Config$"'
+    }
 ]
 .X64ProfileConfig_GCC =
 [
     Using(.X64ReleaseConfig_GCC) // Note: based on Release config
     .Config = 'Profile'
     .CompilerOptions + ' -DPROFILING_ENABLED'
+
+    ForEach(.LibraryPath in.CommonConfigSpecificLibraryPaths)
+    {
+        ^LinkerOptions + ' -L"$LibraryPath$/$Platform$-$Config$"'
+    }
 ]
 .X86BaseConfig_GCC =
 [
@@ -566,6 +584,11 @@ ForEach(.LibraryPath in .CommonLibraryPaths)
     .LibrarianOptions + .LibrarianDebugOptimizations
     .LinkerOptions + .LinkerDebugOptimizations
     .LinkerOptions + .LinkerDebugLibs
+
+    ForEach(.LibraryPath in.CommonConfigSpecificLibraryPaths)
+    {
+        ^LinkerOptions + ' -L"$LibraryPath$/$Platform$-$Config$"'
+    }
 ]
 .X86ReleaseConfig_GCC =
 [
@@ -576,12 +599,22 @@ ForEach(.LibraryPath in .CommonLibraryPaths)
     .LibrarianOptions + .LibrarianReleaseOptimizations
     .LinkerOptions + .LinkerReleaseOptimizations
     .LinkerOptions + .LinkerReleaseLibs
+
+    ForEach(.LibraryPath in.CommonConfigSpecificLibraryPaths)
+    {
+        ^LinkerOptions + ' -L"$LibraryPath$/$Platform$-$Config$"'
+    }
 ]
 .X86ProfileConfig_GCC =
 [
     Using(.X86ReleaseConfig_GCC) // Note: based on Release config
     .Config = 'Profile'
     .CompilerOptions + ' -DPROFILING_ENABLED'
+
+    ForEach(.LibraryPath in.CommonConfigSpecificLibraryPaths)
+    {
+        ^LinkerOptions + ' -L"$LibraryPath$/$Platform$-$Config$"'
+    }
 ]
 
 
@@ -724,9 +757,9 @@ ForEach(.LibraryPath in .CommonLibraryPaths)
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-.OutputBase = '../tmp'
+.OutputBase = '../tmp' 
 .OutputBinBase = '../bin'
-.OutputLibBase = '../lib'
+.OutputLibBase = '../lib' 
 .OutputIncBase = '../include'
 
 //------------------------------------------------------------------------------
@@ -744,7 +777,7 @@ ForEach(.IncludePath in .CommonIncludePaths)
 }
 .ProjectCommon =
 [
-    .ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -showcmds ^$(ProjectName)-^$(Configuration)'
+    .ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -verbose -showcmds ^$(ProjectName)-^$(Configuration)'
     .ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -clean ^$(ProjectName)-^$(Configuration)'
     .OutputDirectory = '^$(SolutionDir)..\tmp2'
     .IntermediateDirectory = '^$(SolutionDir)..\tmp2'
@@ -844,6 +877,7 @@ VCXProject( 'UpdateSolution-proj' )
 #include "core\fbuild.bff"
 #include "tests\threadpool\fbuild.bff"
 #include "tests\vulkan\fbuild.bff"
+#include "..\extern\reckless\fbuild.bff"
 
 // Aliases : All-$Platform$-$Config$
 //------------------------------------------------------------------------------
@@ -966,6 +1000,7 @@ VSSolution( 'solution' )
 	.Deps				= [
 							.Projects = { 'Core-proj',
 										  'TestThreadPool-proj',
+                                          'Reckless-proj'
 							 }
 							.Dependencies = { 'All-proj' }
 						  ]
@@ -985,8 +1020,15 @@ VSSolution( 'solution' )
                             }
     ]
 
+    .Folder_3_Extern =
+    [
+        .Path = 'Extern'
+        .Projects = { 'Reckless-proj' }
+    ]
+
     .SolutionFolders	=	{ .Folder_1_Engine,
 							  .Folder_2_Tests,
+                              .Folder_3_Extern
 							}
 }
 
