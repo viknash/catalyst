@@ -15,5 +15,10 @@
 #include "experimental/type_traits"
 #include "experimental/yield"
 
+#include "cds/init.h"
+#include "cds/version.h"
+
 using namespace std;
 using namespace std::experimental::concurrency_v1;
+
+using namespace cds;

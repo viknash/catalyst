@@ -61,42 +61,54 @@ my_memalign_hook(size_t alignment, size_t size, const void *caller)
     return nullptr;
 }
 */
+
+template <typename T>
+Allocator<T>::michael_heap Allocator<T>::s_Heap;
+
 void* operator new(size_t size)
 {
-    return malloc(size);
+    return Allocator<void*>::s_Heap.alloc(size);
+    //return malloc(size);
 }
 
 void operator delete(void *p) throw()
 {
-    free(p);
+    Allocator<void*>::s_Heap.free(p);
+    //free(p);
 }
 
-void *operator new(size_t size, const std::nothrow_t &) throw()
+void* operator new(size_t size, const std::nothrow_t &) throw()
 {
-    return malloc(size);
+    return Allocator<void*>::s_Heap.alloc(size);
+    //return malloc(size);
 }
 
 void operator delete(void *p, const std::nothrow_t &) throw()
 {
-    free(p);
+    Allocator<void*>::s_Heap.free(p);
+    //free(p);
 }
 
 void *operator new[](size_t size)
 {
-    return malloc(size);
+    return Allocator<void*>::s_Heap.alloc(size);
+    //return malloc(size);
 }
 
 void operator delete[](void *p) throw()
 {
-    free(p);
+    Allocator<void*>::s_Heap.free(p);
+    //free(p);
 }
 
 void *operator new[](size_t size, const std::nothrow_t &) throw()
 {
-    return malloc(size);
+    return Allocator<void*>::s_Heap.alloc(size);
+    //return malloc(size);
 }
 
 void operator delete[](void *p, const std::nothrow_t &) throw()
 {
-    free(p);
+    Allocator<void*>::s_Heap.free(p);
+    //free(p);
 }

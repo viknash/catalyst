@@ -102,10 +102,14 @@ Compiler( 'Compiler-x64-OSX' )
     '$CATALYST_ROOT$/extern/boost'
     '$VK_SDK_PATH$/Include',
     '$CATALYST_ROOT$/extern/reckless/reckless/include'
+    '$CATALYST_ROOT$/extern/libcds'
 }
 
 .CommonDefines = {
     'VKCPP_ENHANCED_MODE',
+}
+
+.DebugDefines = {
 }
 
 .CommonLibraryPaths = {
@@ -127,6 +131,13 @@ ForEach(.Define in .CommonDefines)
 {
     ^MSVCDefines + ' /D"$Define$"'
 }
+
+.MSVDebugCDefines = ""
+ForEach(.Define in.DebugDefines)
+{
+    ^MSVDebugCDefines + ' /D"$Define$"'
+}
+
 
 .MSVCLibraryPaths = ""
 ForEach(.LibraryPath in.CommonLibraryPaths)
@@ -201,9 +212,9 @@ ForEach(.LibraryPath in.CommonLibraryPaths)
 ]
 .MSVCBaseDebugConfig =
 [
-	Using( .MSVCBaseCommonConfig )
-	.LinkerDebugOptions			= ' ucrtd.lib vcruntimed.lib libcmtd.lib msvcrtd.lib msvcurtd.lib'	
-	.LinkerDebugOptions			+ .LinkerCommonOptions
+    Using(.MSVCBaseCommonConfig)
+    .LinkerDebugOptions = ' ucrtd.lib vcruntimed.lib libcmtd.lib msvcrtd.lib msvcurtd.lib'
+    .LinkerDebugOptions + .LinkerCommonOptions
 ]
 .MSVCBaseReleaseConfig =
 [
@@ -236,6 +247,7 @@ ForEach(.LibraryPath in.CommonLibraryPaths)
 	.Config					= 'Debug'
 	.CompilerOptions		+ ' /DDEBUG /DPROFILING_ENABLED'
 							+ .CompilerDebugOptimizations
+                            + ^MSVDebugCDefines
 	.PCHOptions				+ ' /DDEBUG /DPROFILING_ENABLED'
 							+ .CompilerDebugOptimizations
 	.LibrarianOptions		+ .LibrarianDebugOptimizations
@@ -293,7 +305,8 @@ ForEach(.LibraryPath in.CommonLibraryPaths)
 	Using( .MSVCBaseDebugConfig )
 	.Config					= 'Debug'
 	.CompilerOptions		+ ' /DDEBUG /DPROFILING_ENABLED'
-							+ .CompilerDebugOptimizations							
+							+ .CompilerDebugOptimizations	
+                            + ^MSVDebugCDefines
 	.PCHOptions				+ ' /DDEBUG /DPROFILING_ENABLED'
 							+ .CompilerDebugOptimizations							
 	.LibrarianOptions		+ .LibrarianDebugOptimizations
@@ -465,6 +478,12 @@ ForEach(.Define in .CommonDefines)
     ^GCCDefines + ' -D$Define$'
 }
 
+.GCCDebugDefines = ""
+ForEach(.Define in .DebugDefines)
+{
+    ^GCCDebugDefines + ' -D$Define$'
+}
+
 .GCCLibraryPaths = ""
 ForEach(.LibraryPath in .CommonLibraryPaths)
 {
@@ -531,8 +550,9 @@ ForEach(.LibraryPath in .CommonLibraryPaths)
 [
     Using(.X64BaseConfig_GCC)
     .Config = 'Debug'
-    .CompilerOptions + ' -DDEBUG -DPROFILING_ENABLED'
-    + .CompilerDebugOptimizations
+    .CompilerOptions    + ' -DDEBUG -DPROFILING_ENABLED'
+                        + .CompilerDebugOptimizations
+                        + ^GCCDebugDefines
     .LibrarianOptions + .LibrarianDebugOptimizations
     .LinkerOptions + .LinkerDebugOptimizations
     .LinkerOptions + .LinkerDebugLibs
@@ -777,7 +797,7 @@ ForEach(.IncludePath in .CommonIncludePaths)
 }
 .ProjectCommon =
 [
-    .ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -verbose -showcmds ^$(ProjectName)-^$(Configuration)'
+    .ProjectBuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -showcmds ^$(ProjectName)-^$(Configuration)'
     .ProjectRebuildCommand = 'cd ^$(SolutionDir)..\..\src\ &amp; fbuild -vs -dist -cache -clean ^$(ProjectName)-^$(Configuration)'
     .OutputDirectory = '^$(SolutionDir)..\tmp2'
     .IntermediateDirectory = '^$(SolutionDir)..\tmp2'
